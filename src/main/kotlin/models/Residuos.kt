@@ -21,8 +21,13 @@ fun loadCsvResi(csvFile: File): List<Residuos> {
                 mesResi = it[1],
                 tipoResi = it[3],
                 distritoResi = it[5],
-                toneladasResi = it[6].toDouble()
+                toneladasResi = punto(it[6])
             )
         }
     return residuos
+}
+
+fun punto(dato: String): Double {
+    val nuevo: String = dato.replace(",", ".")
+    return nuevo.toDouble()
 }
