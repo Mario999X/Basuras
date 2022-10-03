@@ -5,9 +5,12 @@ import java.io.File
 
 @DataSchema
 data class Residuos(
+    val anioResi: String,
     val mesResi: String,
+    val loteResi: String,
     val tipoResi: String,
-    val distritoResi: String, //Habrá que decidir si elegir el código del residuo o el nombre. De momento uso el nombre
+    val codDistritoResi: String,
+    val nomDistritoResi: String,
     val toneladasResi: Double
 )
 
@@ -18,9 +21,12 @@ fun loadCsvResi(csvFile: File): List<Residuos> {
         .map {
             it.map { campo -> campo.trim() }
             Residuos(
+                anioResi = it[0],
                 mesResi = it[1],
+                loteResi = it[2],
                 tipoResi = it[3],
-                distritoResi = it[5],
+                codDistritoResi = it[4],
+                nomDistritoResi = it[5],
                 toneladasResi = punto(it[6])
             )
         }
