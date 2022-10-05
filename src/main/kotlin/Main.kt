@@ -1,8 +1,7 @@
 import controllers.ControllerContenedor
 
-
 fun main() {
-
-    ControllerContenedor.procesoFiltrados()
+    ControllerContenedor.parseCsv()
+    //ControllerContenedor.procesoFiltrados()
 
 }
