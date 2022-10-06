@@ -1,10 +1,14 @@
 package controllers
 
+
+import jetbrains.letsPlot.Stat
+import jetbrains.letsPlot.export.ggsave
+import jetbrains.letsPlot.geom.geomBar
+import jetbrains.letsPlot.intern.Plot
+import jetbrains.letsPlot.label.labs
+import jetbrains.letsPlot.letsPlot
 import models.*
-import org.jetbrains.kotlinx.dataframe.api.cast
-import org.jetbrains.kotlinx.dataframe.api.count
-import org.jetbrains.kotlinx.dataframe.api.groupBy
-import org.jetbrains.kotlinx.dataframe.api.toDataFrame
+import org.jetbrains.kotlinx.dataframe.api.*
 import java.io.File
 
 object ControllerContenedor {
@@ -14,14 +18,13 @@ object ControllerContenedor {
     private val pathCont = workingDirectory + fs + "data" + fs + "contenedores_varios.csv"
     private val pathResi = workingDirectory + fs + "data" + fs + "modelo_residuos_2021.csv"
 
-    fun procesoFiltrados() {
-        val cont by lazy { loadCsvCont(File(pathCont)) }
-        val dfCont by lazy { cont.toDataFrame() }
-        val resi by lazy { loadCsvResi(File(pathResi)) }
-        val dfResi by lazy { resi.toDataFrame() }
+    private val cont by lazy { loadCsvCont(File(pathCont)) }
+    private val dfCont by lazy { cont.toDataFrame() }
+    private val resi by lazy { loadCsvResi(File(pathResi)) }
+    private val dfResi by lazy { resi.toDataFrame() }
 
-        println(dfCont)
-        println(dfResi)
+    fun procesoFiltrados() {
+
         dfCont.cast<Contenedores>()
 
         val numConTipo = dfCont
@@ -34,6 +37,23 @@ object ControllerContenedor {
                 count { it.tipoCont == "ENVASES" } into "Envases"
                 count { it.tipoCont == "VIDRIO" } into "Vidrio"
             }
-        println(numConTipo)
+
+        val numContenedores = dfCont.groupBy { it.distritoCont }.aggregate { count() into "contenedores" }
+
+        // Grafico barras (Total contenedores X Distrito)
+        val fig: Plot = letsPlot(data = numContenedores.toMap()) + geomBar(
+            stat = Stat.identity,
+            alpha = 0.8
+        ) {
+            x = "distritoCont"; y = "contenedores"
+        } + labs(
+            x = "Distrito",
+            y = "Contenedores",
+            title = "Total contenedores por distrito"
+        )
+        ggsave(fig, "ContenedoresPorDistrito.png")
+
     }
+
+
 }
