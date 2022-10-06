@@ -1,25 +1,46 @@
 package models
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import nl.adaptivity.xmlutil.serialization.XmlElement
 import org.jetbrains.kotlinx.dataframe.annotations.DataSchema
 import java.io.File
 
 @DataSchema
+@Serializable
+@SerialName("Contenedores")
 data class Contenedores(
+    @XmlElement(true)
     val codIntCont: String,
+    @XmlElement(true)
     val tipoCont: String,
+    @XmlElement(true)
     val modeloCont: String,
+    @XmlElement(true)
     val descModeloCont: String,
+    @XmlElement(true)
     val cantidadCont: Int,
+    @XmlElement(true)
     val loteCont: String,
+    @XmlElement(true)
     val distritoCont: String,
+    @XmlElement(true)
     val barrioCont: String?,
+    @XmlElement(true)
     val viaCont: String,
+    @XmlElement(true)
     val nomViaCont: String,
+    @XmlElement(true)
     val numCalleCont: String,
+    @XmlElement(true)
     val coorXCont: String,
+    @XmlElement(true)
     val coorYCont: String,
+    @XmlElement(true)
     val longiCont: String,
+    @XmlElement(true)
     val latiCont: String,
+    @XmlElement(true)
     val dirCompletaCont: String
 )
 
