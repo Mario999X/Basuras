@@ -1,5 +1,13 @@
 package controllers
 
+
+
+import jetbrains.letsPlot.Stat
+import jetbrains.letsPlot.export.ggsave
+import jetbrains.letsPlot.geom.geomBar
+import jetbrains.letsPlot.intern.Plot
+import jetbrains.letsPlot.label.labs
+import jetbrains.letsPlot.letsPlot
 import kotlinx.serialization.encodeToString
 import models.*
 import nl.adaptivity.xmlutil.serialization.XML
@@ -57,6 +65,23 @@ object ControllerContenedor {
                 count { it.tipoCont == "ENVASES" } into "Envases"
                 count { it.tipoCont == "VIDRIO" } into "Vidrio"
             }
-        println(numConTipo)
+
+        val numContenedores = dfCont.groupBy { it.distritoCont }.aggregate { count() into "contenedores" }
+
+        // Grafico barras (Total contenedores X Distrito)
+        val fig: Plot = letsPlot(data = numContenedores.toMap()) + geomBar(
+            stat = Stat.identity,
+            alpha = 0.8
+        ) {
+            x = "distritoCont"; y = "contenedores"
+        } + labs(
+            x = "Distrito",
+            y = "Contenedores",
+            title = "Total contenedores por distrito"
+        )
+        ggsave(fig, "ContenedoresPorDistrito.png")
+
     }
+
+
 }
