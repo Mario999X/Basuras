@@ -1,6 +1,9 @@
-import controllers.ControllerContenedor
+import controllers.ContenedorController
+import controllers.DirController
 
 fun main() {
-    ControllerContenedor.parseCsv()
-    ControllerContenedor.procesoFiltrados()
+
+    DirController.init()
+    ContenedorController.init()
+
 }
