@@ -14,9 +14,11 @@ import org.jetbrains.kotlinx.dataframe.api.*
 import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import org.jetbrains.kotlinx.dataframe.io.writeJson
 import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.system.measureTimeMillis
 
-object ContenedorController {
+object ResumenController {
 
     private val fs = File.separator
     private val workingDirectory: String = System.getProperty("user.dir")
@@ -40,6 +42,9 @@ object ContenedorController {
             procesoFiltrados()
         }
         println("Tiempo: $tiempo ms")
+
+        val fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss"))
+        println(fecha)
     }
 
     fun parseCsv() {
@@ -62,9 +67,7 @@ object ContenedorController {
 
     fun procesoFiltrados() {
         dfCont.cast<Contenedores>()
-        val numTipoContXDistrito = dfCont
-            //.filter { it.distritoCont == "VILLAVERDE" }
-            .groupBy { it.distritoCont.rename("Distrito") }
+        val numTipoContXDistrito = dfCont.groupBy { it.distritoCont.rename("Distrito") }
             .aggregate {
                 count { it.tipoCont == "RESTO" } into "Restos"
                 count { it.tipoCont == "PAPEL-CARTON" } into "Papel-Carton"
@@ -75,19 +78,17 @@ object ContenedorController {
         println(numTipoContXDistrito)
 
         // Media de contenedores de cada tipo
-        //println(numTipoContXDistrito.mean())
+        val mediaTipoContXDistrito = numTipoContXDistrito.mean()
+        println(mediaTipoContXDistrito)
 
         val numContenedores = dfCont.groupBy { it.distritoCont }.aggregate { count() into "contenedores" }
         // Grafico barras (Total contenedores X Distrito)
         val fig: Plot = letsPlot(data = numContenedores.toMap()) + geomBar(
-            stat = Stat.identity,
-            alpha = 0.8
+            stat = Stat.identity, alpha = 0.8
         ) {
             x = "distritoCont"; y = "contenedores"
         } + labs(
-            x = "Distrito",
-            y = "Contenedores",
-            title = "Total contenedores por distrito"
+            x = "Distrito", y = "Contenedores", title = "Total contenedores por distrito"
         )
         ggsave(fig, "ContenedoresPorDistrito.png")
 
