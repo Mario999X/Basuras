@@ -82,7 +82,7 @@ object ResumenController {
         println(mediaTipoContXDistrito)
 
         val numContenedores = dfCont.groupBy { it.distritoCont }.aggregate { count() into "contenedores" }
-        // Grafico barras (Total contenedores X Distrito)
+        // Gráfico barras (Total contenedores X Distrito)
         val fig: Plot = letsPlot(data = numContenedores.toMap()) + geomBar(
             stat = Stat.identity, alpha = 0.8
         ) {
