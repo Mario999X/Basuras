@@ -11,38 +11,33 @@ import org.jetbrains.kotlinx.dataframe.io.writeJson
 import java.io.File
 
 object ParserController {
+    fun init(dirOrigen: String, dirDestino: String){
+        val fs = File.separator
+        val csvContenedores = dirOrigen + fs + "contenedores_varios.csv"
+        val csvResiduos = dirOrigen + fs + "modelo_residuos_2021.csv"
+        val destinoPath = dirDestino + fs
 
-    private val fs = File.separator
-    private val workingDirectory: String = System.getProperty("user.dir")
-    private val pathCont = workingDirectory + fs + "data" + fs + "contenedores_varios.csv"
-    private val pathResi = workingDirectory + fs + "data" + fs + "modelo_residuos_2021.csv"
-
-    //Path destino de nuevos archivos temporal
-    private val pathDestino = workingDirectory + fs + "src" + fs + "main" + fs + "resources"
-
-    //Convertir datos de Contenedores a DataFrame
-    private val cont by lazy { loadCsvCont(File(pathCont)) }
-    private val dfCont by lazy { cont.toDataFrame() }
-
-    //Convertir datos de Residuos a DataFrame
-    private val resi by lazy { loadCsvResi(File(pathResi)) }
-    private val dfResi by lazy { resi.toDataFrame() }
-
-    fun init(){
+        //Lectura de csv
+        val cont by lazy { loadCsvCont(File(csvContenedores)) }
+        val resi by lazy { loadCsvResi(File(csvResiduos)) }
+    }
+    private fun parseCsv(cont: List<Contenedores>, resi: List<Residuos>, destino: String) {
+        val dfCont by lazy { cont.toDataFrame() }
+        val dfResi by lazy { resi.toDataFrame() }
         //Selección de columnas
         val contNuevoCsv = dfCont.select { it.tipoCont and it.cantidadCont and it.distritoCont }
         val resiNuevoCsv = dfResi.select { it.mesResi and it.tipoResi and it.nomDistritoResi and it.toneladasResi }
         //Creación CSV nuevo
-        contNuevoCsv.writeCSV(File(pathDestino + fs + "contenedoresCsv.csv"), CSVFormat.DEFAULT.withDelimiter(';'))
-        resiNuevoCsv.writeCSV(File(pathDestino + fs + "residuosCsv.csv"), CSVFormat.DEFAULT.withDelimiter(';'))
+        contNuevoCsv.writeCSV(File(destino + "contenedoresCsv.csv"), CSVFormat.DEFAULT.withDelimiter(';'))
+        resiNuevoCsv.writeCSV(File(destino + "residuosCsv.csv"), CSVFormat.DEFAULT.withDelimiter(';'))
         //Creación de JSON
-        contNuevoCsv.writeJson(File(pathDestino + fs + "contenedoresJson.json"), prettyPrint = true)
-        resiNuevoCsv.writeJson(File(pathDestino + fs + "residuosJson.json"), prettyPrint = true)
+        contNuevoCsv.writeJson(File(destino + "contenedoresJson.json"), prettyPrint = true)
+        resiNuevoCsv.writeJson(File(destino + "residuosJson.json"), prettyPrint = true)
         //Creación de XML
         val xml = XML { indentString = " " }
-        val contenedoresXml = File(pathDestino + fs + "contenedoresXML.xml")
+        val contenedoresXml = File(destino + "contenedoresXML.xml")
         contenedoresXml.writeText(xml.encodeToString(cont))
-        val residuosXml = File(pathDestino + fs + "residuosXml.xml")
+        val residuosXml = File(destino + "residuosXml.xml")
         residuosXml.writeText(xml.encodeToString(resi))
     }
 }
