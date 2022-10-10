@@ -44,6 +44,7 @@ object ResumenController {
         val dfCont by lazy { cont.toDataFrame() }
         val dfResi by lazy { resi.toDataFrame() }
         dfCont.cast<Contenedores>()
+        //Número de contenedores de cada tipo que hay en cada distrito
         val numTipoContXDistrito = dfCont.groupBy { it.distritoCont.rename("Distrito") }
             .aggregate {
                 count { it.tipoCont == "RESTO" } into "Restos"
@@ -55,11 +56,20 @@ object ResumenController {
         println(numTipoContXDistrito)
 
         // Media de contenedores de cada tipo
-        val mediaTipoContXDistrito = numTipoContXDistrito.mean()
+        val mediaTipoContXDistrito = dfCont
+            .groupBy { it.distritoCont and it.tipoCont }
+            .aggregate { mean { it.cantidadCont } into "Media" }.sortBy { it.distritoCont }
         println(mediaTipoContXDistrito)
 
+        //Media de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito
+        val mediaTonResiDistritos = dfResi
+            .groupBy { it.nomDistritoResi.rename("Distrito") and it.tipoResi.rename("Tipo") }
+            .aggregate { mean { it.toneladasResi } into "Media" }.sortBy { it["Distrito"] }
+        println(mediaTonResiDistritos)
+
+        //Gráficas
+        //Gráfico barras (Total contenedores X Distrito)
         val numContenedores = dfCont.groupBy { it.distritoCont }.aggregate { count() into "contenedores" }
-        // Gráfico barras (Total contenedores X Distrito)
         val fig: Plot = letsPlot(data = numContenedores.toMap()) + geomBar(
             stat = Stat.identity, alpha = 0.8
         ) {
