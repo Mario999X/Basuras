@@ -31,7 +31,15 @@ fun main(args: Array<String>) {
                     DirController.init(args[2], args[3])
                     DistritoController.init(args[1], args[2], args[3])
                 }
+
+                else -> {
+                    println("Vuelve a ejecutar el programa con una opcion, un distrito, una carpeta de origen de los datos y otra de destino")
+                }
             }
+        }
+
+        else -> {
+            println("Vuelve a ejecutar el programa con una argumentos válidos")
         }
     }
     println("\nCerrando App")
