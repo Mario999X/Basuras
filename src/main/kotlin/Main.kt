@@ -2,15 +2,15 @@ import controllers.ResumenController
 import controllers.DirController
 import controllers.DistritoController
 import controllers.ParserController
-import java.util.*
-import javax.swing.text.html.parser.Parser
 
 fun main(args: Array<String>) {
+    println("Ejecutando App \n")
     when (args.size) {
         0, 1, 2 -> println("Vuelve a ejecutar el programa con una opción, una carpeta de origen de los datos y otra de destino")
         3 -> {
             when (args[0].lowercase()) {
                 "parser" -> {
+                    DirController.init(args[1], args[2])
                     ParserController.init(args[1], args[2])
                 }
 
@@ -26,8 +26,13 @@ fun main(args: Array<String>) {
         }
 
         4 -> {
-            val opcion: String = args[0].lowercase()
+            when (args[0].lowercase()) {
+                "resumen" -> {
+                    DirController.init(args[1], args[2])
+                    DistritoController.init(args[1], args[2], args[3])
+                }
+            }
         }
-        //DistritoController.init()
     }
+    println("\nCerrando App")
 }

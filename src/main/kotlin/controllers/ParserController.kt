@@ -11,8 +11,9 @@ import org.jetbrains.kotlinx.dataframe.io.writeJson
 import java.io.File
 
 object ParserController {
-    fun init(dirOrigen: String, dirDestino: String){
-        val fs = File.separator
+    private val fs = File.separator
+    fun init(dirOrigen: String, dirDestino: String) {
+        println("Creando archivos")
         val csvContenedores = dirOrigen + fs + "contenedores_varios.csv"
         val csvResiduos = dirOrigen + fs + "modelo_residuos_2021.csv"
         val destinoPath = dirDestino + fs
@@ -20,8 +21,11 @@ object ParserController {
         //Lectura de csv
         val cont by lazy { loadCsvCont(File(csvContenedores)) }
         val resi by lazy { loadCsvResi(File(csvResiduos)) }
+
+        parserCsv(cont, resi, destinoPath)
     }
-    private fun parseCsv(cont: List<Contenedores>, resi: List<Residuos>, destino: String) {
+
+    private fun parserCsv(cont: List<Contenedores>, resi: List<Residuos>, destino: String) {
         val dfCont by lazy { cont.toDataFrame() }
         val dfResi by lazy { resi.toDataFrame() }
         //Selección de columnas

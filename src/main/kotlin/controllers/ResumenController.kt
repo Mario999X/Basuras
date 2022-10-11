@@ -6,23 +6,16 @@ import jetbrains.letsPlot.geom.geomBar
 import jetbrains.letsPlot.intern.Plot
 import jetbrains.letsPlot.label.labs
 import jetbrains.letsPlot.letsPlot
-import kotlinx.serialization.encodeToString
 import models.*
-import nl.adaptivity.xmlutil.serialization.XML
-import org.apache.commons.csv.CSVFormat
-import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.*
-import org.jetbrains.kotlinx.dataframe.io.writeCSV
-import org.jetbrains.kotlinx.dataframe.io.writeJson
 import java.io.File
-import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.system.measureTimeMillis
 
 object ResumenController {
+    private val fs = File.separator
     fun init(dirOrigen: String, dirDestino: String) {
-        val fs = File.separator
         val csvContenedores = dirOrigen + fs + "contenedores_varios.csv"
         val csvResiduos = dirOrigen + fs + "modelo_residuos_2021.csv"
         val destinoPath = dirDestino + fs
@@ -44,7 +37,8 @@ object ResumenController {
         val dfCont by lazy { cont.toDataFrame() }
         val dfResi by lazy { resi.toDataFrame() }
         dfCont.cast<Contenedores>()
-        //Número de contenedores de cada tipo que hay en cada distrito
+
+        //Numero de contenedores de cada tipo que hay en cada distrito
         val numTipoContXDistrito = dfCont.groupBy { it.distritoCont.rename("Distrito") }
             .aggregate {
                 count { it.tipoCont == "RESTO" } into "Restos"
@@ -55,20 +49,19 @@ object ResumenController {
             }
         println(numTipoContXDistrito)
 
-        // Media de contenedores de cada tipo
-        val mediaTipoContXDistrito = dfCont
-            .groupBy { it.distritoCont and it.tipoCont }
+        // Media de contenedores de cada tipo por distrito
+        val mediaTipoContXDistrito = dfCont.groupBy { it.distritoCont and it.tipoCont }
             .aggregate { mean { it.cantidadCont } into "Media" }.sortBy { it.distritoCont }
         println(mediaTipoContXDistrito)
 
         //Media de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito
-        val mediaTonResiDistritos = dfResi
-            .groupBy { it.nomDistritoResi.rename("Distrito") and it.tipoResi.rename("Tipo") }
-            .aggregate { mean { it.toneladasResi } into "Media" }.sortBy { it["Distrito"] }
+        val mediaTonResiDistritos =
+            dfResi.groupBy { it.nomDistritoResi.rename("Distrito") and it.tipoResi.rename("Tipo") }
+                .aggregate { mean { it.toneladasResi } into "Media" }.sortBy { it["Distrito"] }
         println(mediaTonResiDistritos)
 
-        //Gráficas
-        //Gráfico barras (Total contenedores X Distrito)
+        //--- GRAFICAS ---
+        //Grafico barras (Total contenedores X Distrito)
         val numContenedores = dfCont.groupBy { it.distritoCont }.aggregate { count() into "contenedores" }
         val fig: Plot = letsPlot(data = numContenedores.toMap()) + geomBar(
             stat = Stat.identity, alpha = 0.8

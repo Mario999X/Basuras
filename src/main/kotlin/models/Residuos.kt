@@ -3,9 +3,9 @@ package models
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import nl.adaptivity.xmlutil.serialization.XmlElement
-import nl.adaptivity.xmlutil.serialization.XmlSerialName
 import org.jetbrains.kotlinx.dataframe.annotations.DataSchema
 import java.io.File
+import java.text.Normalizer
 
 @DataSchema
 @Serializable
@@ -39,7 +39,7 @@ fun loadCsvResi(csvFile: File): List<Residuos> {
                 loteResi = it[2],
                 tipoResi = it[3],
                 codDistritoResi = it[4],
-                nomDistritoResi = it[5],
+                nomDistritoResi = igualarString(it[5]),
                 toneladasResi = punto(it[6])
             )
         }
@@ -49,4 +49,10 @@ fun loadCsvResi(csvFile: File): List<Residuos> {
 fun punto(dato: String): Double {
     val nuevo: String = dato.replace(",", ".")
     return nuevo.toDouble()
+}
+
+// Tuve que igualar el estilo de los nombres al otro CSV, aqui CHAMBERI estaba en minuscula y con tilde
+fun igualarString(dato: String): String {
+    val nuevo: String = Normalizer.normalize(dato, Normalizer.Form.NFD).replace("[^\\p{ASCII}]".toRegex(), "")
+    return nuevo.uppercase()
 }
