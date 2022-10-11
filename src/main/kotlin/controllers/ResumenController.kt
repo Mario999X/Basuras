@@ -11,6 +11,7 @@ import org.jetbrains.kotlinx.dataframe.api.*
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlin.system.measureTimeMillis
 
 object ResumenController {
@@ -27,6 +28,7 @@ object ResumenController {
         val tiempo = measureTimeMillis {
             procesoFiltrados(cont, resi)
         }
+        createInforme(tiempo.toString())
         println("Tiempo: $tiempo ms")
 
         val fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss"))
@@ -96,6 +98,11 @@ object ResumenController {
         )
         ggsave(fig, "ContenedoresPorDistrito.png")
 
+    }
+
+    private fun createInforme(tiempo: String){
+        val informe= Informe(UUID.randomUUID().toString(), LocalDateTime.now().toString(),"Resumen Global","Proceso Exitoso",tiempo)
+        Informe.writeToXmlFile(informe, File("bitacora${fs}bitacora.xml" ))
     }
 
 
