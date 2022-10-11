@@ -38,7 +38,7 @@ object ResumenController {
         val dfResi by lazy { resi.toDataFrame() }
         dfCont.cast<Contenedores>()
 
-        //Numero de contenedores de cada tipo que hay en cada distrito
+        //Número de contenedores de cada tipo que hay en cada distrito
         val numTipoContXDistrito = dfCont.groupBy { it.distritoCont.rename("Distrito") }
             .aggregate {
                 count { it.tipoCont == "RESTO" } into "Restos"
@@ -59,6 +59,30 @@ object ResumenController {
             dfResi.groupBy { it.nomDistritoResi.rename("Distrito") and it.tipoResi.rename("Tipo") }
                 .aggregate { mean { it.toneladasResi } into "Media" }.sortBy { it["Distrito"] }
         println(mediaTonResiDistritos)
+
+        //Máximo, mínimo, media y desviación de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito
+        val maxToneladasDistrito =
+            dfResi.groupBy { it.nomDistritoResi.rename("Distrito") and it.tipoResi.rename("Tipo") }
+                .aggregate {
+                    max { it.toneladasResi } into "Max"
+                    min { it.toneladasResi } into "Min"
+                    median { it.toneladasResi } into "Mediana"
+                    std { it.toneladasResi } into "Desviación"
+                }.sortBy { it["Distrito"] }
+        println(maxToneladasDistrito)
+
+        //Suma de las toneladas recogidas en un año por distrito
+        val sumToneladasDistrito =
+            dfResi.groupBy { it.nomDistritoResi.rename("Distrito") }
+                .aggregate { sum { it.toneladasResi } into "Total" }.sortBy { it["Distrito"] }
+        println(sumToneladasDistrito)
+
+        //Por cada distrito obtener para cada tipo de residuo la cantidad recogida
+        val toneladasDistrito = dfResi.groupBy { it.nomDistritoResi.rename("Distrito") and it.tipoResi.rename("Tipo") }
+            .aggregate {
+                sum { it.toneladasResi } into "Total"
+            }.sortBy { it["Distrito"] }
+        println(toneladasDistrito)
 
         //--- GRAFICAS ---
         //Grafico barras (Total contenedores X Distrito)

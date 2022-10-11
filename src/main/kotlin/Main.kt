@@ -2,9 +2,11 @@ import controllers.ResumenController
 import controllers.DirController
 import controllers.DistritoController
 import controllers.ParserController
+import mu.KotlinLogging
 
+private val logger = KotlinLogging.logger {}
 fun main(args: Array<String>) {
-    println("Ejecutando App \n")
+    logger.debug { "Ejecutando aplicación" }
     when (args.size) {
         0, 1, 2 -> println("Vuelve a ejecutar el programa con una opción, una carpeta de origen de los datos y otra de destino")
         3 -> {
