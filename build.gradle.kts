@@ -25,8 +25,8 @@ dependencies {
     // Kotlin's serialization JSON
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
     // Para hacer logs
-    implementation("io.github.microutils:kotlin-logging-jvm:2.1.23")
-    implementation("ch.qos.logback:logback-classic:1.3.0-alpha16")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.0")
+    implementation("ch.qos.logback:logback-classic:1.4.1")
     // LetsPlot
     implementation("org.jetbrains.lets-plot:lets-plot-kotlin:3.2.0")
     implementation("org.jetbrains.lets-plot:lets-plot-image-export:2.3.0")
