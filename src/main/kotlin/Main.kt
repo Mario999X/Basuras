@@ -28,7 +28,7 @@ fun main(args: Array<String>) {
         4 -> {
             when (args[0].lowercase()) {
                 "resumen" -> {
-                    DirController.init(args[1], args[2])
+                    DirController.init(args[2], args[3])
                     DistritoController.init(args[1], args[2], args[3])
                 }
             }
