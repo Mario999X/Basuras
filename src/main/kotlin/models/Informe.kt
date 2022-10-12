@@ -3,17 +3,18 @@ package models
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
+import mu.KotlinLogging
 import nl.adaptivity.xmlutil.serialization.XML
 import nl.adaptivity.xmlutil.serialization.XmlElement
 import java.io.File
 import java.util.*
 
+private val logger = KotlinLogging.logger {}
+
 @Serializable
 @SerialName("Informe")
 data class Informe(
-    @XmlElement(true)
     var id: String,
-    @XmlElement(true)
     var createdAt: String,
     @XmlElement(true)
     var opcion: String,
@@ -26,7 +27,9 @@ data class Informe(
 }
 
 fun Informe.Companion.writeToXmlFile(informe: Informe, xmlFile: File) {
-    println("writing Informe")
-    val xml = XML { indentString = "  " }
-    xmlFile.writeText(xml.encodeToString(informe))
+    logger.debug { "Escribiendo informe..." }
+    val xml = XML { indentString = " " }
+    xmlFile.appendText(xml.encodeToString(informe))
+    xmlFile.appendText("\n")
+    logger.debug { "Informe realizado con éxito" }
 }

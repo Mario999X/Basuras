@@ -7,12 +7,15 @@ import jetbrains.letsPlot.geom.geomBar
 import jetbrains.letsPlot.intern.Plot
 import jetbrains.letsPlot.label.labs
 import models.*
+import mu.KotlinLogging
 import org.jetbrains.kotlinx.dataframe.api.*
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.system.measureTimeMillis
+
+private val logger = KotlinLogging.logger {}
 
 object DistritoController {
     private val fs = File.separator
@@ -28,14 +31,14 @@ object DistritoController {
 
         val distrito = distritoMain.uppercase()
         val tiempo = measureTimeMillis {
-            println("Distrito elegido: $distrito")
+            logger.debug { "Distrito elegido: $distrito" }
             procesoFiltrados(distrito, cont, resi)
         }
         createInforme(distrito, tiempo.toString())
-        println("Tiempo de filtrados: $tiempo ms")
+        logger.debug { "Tiempo de filtrados: $tiempo ms" }
 
         val fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss"))
-        println(fecha)
+        logger.debug { fecha }
     }
 
     private fun procesoFiltrados(distrito: String, cont: List<Contenedores>, resi: List<Residuos>) {
@@ -43,7 +46,7 @@ object DistritoController {
         val dfResi by lazy { resi.toDataFrame() }
         dfCont.cast<Contenedores>()
 
-        // Numero de contenedores de cada tipo, distrito especifico
+        logger.debug { "Número de contenedores de cada tipo, distrito específico" }
         val numTipoContXDistrito =
             dfCont.filter { it.distritoCont == distrito }
                 .aggregate {
@@ -55,7 +58,7 @@ object DistritoController {
                 }
         println(numTipoContXDistrito)
 
-        // Total toneladas recogidas en x Distrito por residuo
+        logger.debug { "Total de toneladas recogidas en este distrito por residuos" }
         val totalTonResiDistrito =
             dfResi.filter { it.nomDistritoResi == distrito }.groupBy { it.tipoResi.rename("Tipo") }
                 .aggregate {
@@ -63,7 +66,7 @@ object DistritoController {
                 }.sortBy { it["TotalToneladas"].desc() }
         println(totalTonResiDistrito)
 
-        // Maximo, minimo, media y desviacion.
+        logger.debug { "Máximo, mínimo, media y desviación" }
         val operacionesToneladas = dfResi.filter { it.nomDistritoResi == distrito }
             .groupBy { it.tipoResi.rename("Tipo") }
             .aggregate {
@@ -114,8 +117,14 @@ object DistritoController {
 
     }
 
-    private fun createInforme(distritoMain: String, tiempo: String){
-        val informe = Informe(UUID.randomUUID().toString(), LocalDateTime.now().toString(),"Resumen $distritoMain","Proceso Exitoso",tiempo)
-        Informe.writeToXmlFile(informe, File("bitacora${fs}bitacora.xml" ))
+    private fun createInforme(distritoMain: String, tiempo: String) {
+        val informe = Informe(
+            UUID.randomUUID().toString(),
+            LocalDateTime.now().toString(),
+            "Resumen $distritoMain",
+            "Proceso Exitoso",
+            "$tiempo milisegundos"
+        )
+        Informe.writeToXmlFile(informe, File("bitacora${fs}bitacora.xml"))
     }
 }

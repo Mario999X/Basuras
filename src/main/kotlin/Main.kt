@@ -8,7 +8,9 @@ private val logger = KotlinLogging.logger {}
 fun main(args: Array<String>) {
     logger.debug { "Ejecutando aplicación" }
     when (args.size) {
-        0, 1, 2 -> println("Vuelve a ejecutar el programa con una opción, una carpeta de origen de los datos y otra de destino")
+        0, 1, 2 ->
+            logger.debug { "Sin parámetros o datos erroneos: Vuelve a ejecutar el programa con una opción, una carpeta de origen de los datos y otra de destino" }
+
         3 -> {
             when (args[0].lowercase()) {
                 "parser" -> {
@@ -22,7 +24,7 @@ fun main(args: Array<String>) {
                 }
 
                 else -> {
-                    println("Vuelve a ejecutar el programa con una opción, una carpeta de origen de los datos y otra de destino")
+                    logger.debug { "Opción errónea: Vuelve a ejecutar el programa con una opción válida, una carpeta de origen de los datos y otra de destino" }
                 }
             }
         }
@@ -35,14 +37,14 @@ fun main(args: Array<String>) {
                 }
 
                 else -> {
-                    println("Vuelve a ejecutar el programa con una opcion, un distrito, una carpeta de origen de los datos y otra de destino")
+                    logger.debug { "Parámetros erróneos: Vuelve a ejecutar el programa con una opción válida, una carpeta de origen de los datos y otra de destino" }
                 }
             }
         }
 
         else -> {
-            println("Vuelve a ejecutar el programa con una argumentos válidos")
+            logger.debug { "Parámetros erróneos: Vuelve a ejecutar el programa con una opción válida, una carpeta de origen de los datos y otra de destino" }
         }
     }
-    println("\nCerrando App")
+    logger.debug { "Fin de la aplicación" }
 }
