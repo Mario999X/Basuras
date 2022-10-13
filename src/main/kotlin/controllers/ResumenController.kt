@@ -54,6 +54,7 @@ object ResumenController {
                 count { it.tipoCont == "ENVASES" } into "Envases"
                 count { it.tipoCont == "VIDRIO" } into "Vidrio"
             }
+
         println(numTipoContXDistrito)
 
         logger.debug { "Media de contenedores de cada tipo por distrito" }
@@ -115,4 +116,6 @@ object ResumenController {
         )
         Informe.writeToXmlFile(informe, File("bitacora${fs}bitacora.xml"))
     }
+
+
 }
