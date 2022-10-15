@@ -80,7 +80,7 @@ object ResumenController {
         logger.debug { "Máximo, mínimo, media y desviación de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito" }
         maxToneladasDistrito =
             dfResi.groupBy { it.nomDistritoResi.rename("Distrito") and it.tipoResi.rename("Tipo") }
-                .aggregate {
+                .aggregate { it ->
                     max { it.toneladasResi } into "Max"
                     min { it.toneladasResi } into "Min"
                     mean { it.toneladasResi } into "Media"
@@ -100,7 +100,7 @@ object ResumenController {
 
         //--- GRAFICAS ---
         //(Total contenedores X Distrito)
-        val numContenedores = dfCont.groupBy { it.distritoCont }.aggregate { count() into "contenedores" }
+        val numContenedores = dfCont.groupBy { it.distritoCont }.aggregate { count() into "contenedores" }.sortBy { it.distritoCont }
         val fig: Plot = letsPlot(data = numContenedores.toMap()) + geomBar(
             stat = Stat.identity, alpha = 0.8
         ) {

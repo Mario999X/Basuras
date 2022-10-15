@@ -8,17 +8,23 @@ import jetbrains.letsPlot.intern.Plot
 import jetbrains.letsPlot.label.labs
 import models.*
 import mu.KotlinLogging
+import org.jetbrains.kotlinx.dataframe.DataRow
 import org.jetbrains.kotlinx.dataframe.api.*
 import java.io.File
+import java.text.Normalizer
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
 
 private val logger = KotlinLogging.logger {}
 
 object DistritoController {
+    private var exito: Boolean = true
     private val fs = File.separator
+
+    private lateinit var  numTipoContXDistrito: DataRow<Contenedores>
 
     fun init(distritoMain: String, dirOrigen: String, dirDestino: String) {
         val csvContenedores = dirOrigen + fs + "contenedores_varios.csv"
@@ -29,7 +35,8 @@ object DistritoController {
         val cont by lazy { loadCsvCont(File(csvContenedores)) }
         val resi by lazy { loadCsvResi(File(csvResiduos)) }
 
-        val distrito = distritoMain.uppercase()
+        val distrito = Normalizer.normalize(distritoMain.uppercase(), Normalizer.Form.NFD).replace("[^\\p{ASCII}]".toRegex(), "")
+
         val tiempo = measureTimeMillis {
             logger.debug { "Distrito elegido: $distrito" }
             procesoFiltrados(distrito, cont, resi)
@@ -44,10 +51,17 @@ object DistritoController {
     private fun procesoFiltrados(distrito: String, cont: List<Contenedores>, resi: List<Residuos>) {
         val dfCont by lazy { cont.toDataFrame() }
         val dfResi by lazy { resi.toDataFrame() }
-        dfCont.cast<Contenedores>()
+
+        val dfDistritos = dfCont.count { it.distritoCont == distrito }
+        if (dfDistritos == 0) {
+            logger.debug { "No existe el distrito" }
+            exito = false
+            createInforme(distrito, "0")
+            exitProcess(0)
+        }
 
         logger.debug { "Número de contenedores de cada tipo, distrito específico" }
-        val numTipoContXDistrito =
+        numTipoContXDistrito =
             dfCont.filter { it.distritoCont == distrito }
                 .aggregate {
                     count { it.tipoCont == "RESTO" } into "Restos"
@@ -118,11 +132,17 @@ object DistritoController {
     }
 
     private fun createInforme(distritoMain: String, tiempo: String) {
+        var exitoString = "Proceso exitoso"
+
+        if (!exito) {
+            exitoString = "Proceso fallido"
+        }
+
         val informe = Informe(
             UUID.randomUUID().toString(),
             LocalDateTime.now().toString(),
             "Resumen $distritoMain",
-            "Proceso Exitoso",
+            exitoString,
             "$tiempo milisegundos"
         )
         Informe.writeToXmlFile(informe, File("bitacora${fs}bitacora.xml"))
