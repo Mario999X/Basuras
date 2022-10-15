@@ -42,6 +42,7 @@ data class Contenedores(
     val latiCont: String,
     @XmlElement(true)
     val dirCompletaCont: String
+
 )
 
 fun loadCsvCont(csvFile: File): List<Contenedores> {
