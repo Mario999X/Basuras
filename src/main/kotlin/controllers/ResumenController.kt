@@ -1,11 +1,13 @@
 package controllers
 
-import jetbrains.letsPlot.Stat
+import jetbrains.letsPlot.*
 import jetbrains.letsPlot.export.ggsave
 import jetbrains.letsPlot.geom.geomBar
+import jetbrains.letsPlot.geom.geomTile
 import jetbrains.letsPlot.intern.Plot
+import jetbrains.letsPlot.label.ggtitle
 import jetbrains.letsPlot.label.labs
-import jetbrains.letsPlot.letsPlot
+import jetbrains.letsPlot.scale.scaleFillGradient
 import models.*
 import mu.KotlinLogging
 import org.jetbrains.kotlinx.dataframe.DataFrame
@@ -101,7 +103,7 @@ object ResumenController {
         //--- GRAFICAS ---
         //(Total contenedores X Distrito)
         val numContenedores = dfCont.groupBy { it.distritoCont }.aggregate { count() into "contenedores" }
-        val fig: Plot = letsPlot(data = numContenedores.toMap()) + geomBar(
+        var fig: Plot = letsPlot(data = numContenedores.toMap()) + geomBar(
             stat = Stat.identity, alpha = 0.8
         ) {
             x = "distritoCont"; y = "contenedores"
@@ -111,7 +113,15 @@ object ResumenController {
         ggsave(fig, "ContenedoresPorDistrito.png")
 
         //(Grafico de media de toneladas mensuales de recogida de basura por distrito.)
-
+        val mediaToneladas =
+            dfResi.groupBy { it.mesResi.rename("Mes") and it.nomDistritoResi.rename("Distrito") }.aggregate { mean { it.toneladasResi } into "Media" }
+        fig = letsPlot(data = mediaToneladas.toMap()) +
+                geomTile(height = 0.9, width = 0.9) { x = "Distrito"; y = "Mes"; fill = "Media" } +
+                theme(panelBackground = elementBlank(), panelGrid = elementBlank()) + scaleFillGradient(
+            low = "#00FFE5",
+            high = "#006D63"
+        ) + ggtitle("Media de toneladas por distrito y mes") + ggsize(900, 700)
+        ggsave(fig, "ToneladasPorDistrito.png")
     }
 
     private fun createInforme(tiempo: String) {
@@ -128,6 +138,7 @@ object ResumenController {
     private fun createHmtl(dirDestino: String, tiempo: String, fecha: String) {
         val workingDir: String = System.getProperty("user.dir")
         val pathPlot1 = File("${workingDir}${fs}lets-plot-images${fs}ContenedoresPorDistrito.png")
+        val pathPlot2 = File("${workingDir}${fs}lets-plot-images${fs}ToneladasPorDistrito.png")
         val fileHmtl = File(dirDestino + "ResumenGlobal.html")
         val fileCss = File(dirDestino + "ResumenGlobal.css")
 
@@ -190,7 +201,7 @@ object ResumenController {
                         $data3
                         </table>
                         <h3>Media de toneladas mensuales de recogida de basura por distrito</h3>
-                        <img src="..\lets-plot-images\grafica_prueba.png" width="700">
+                        <img src="$pathPlot2" width="700">
                         <h3>Máximo, mínimo , media y desviación de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito</h3>
                         <table border="1">
                         <tr><th>Distrito</th><th>Tipo</th><th>Maximo</th><th>Minimo</th><th>Media</th><th>Desviacion</th></tr>
@@ -215,10 +226,11 @@ object ResumenController {
         )
 
         fileCss.writeText(
-            """ body { margin: 0 }
+            """ body { margin: 0;
+                 background-color: #D7DBDD}
                 
                 .cabecera {
-                background-color: #f5f5f5;
+                background-color: #CACFD2;
                 width: 100%;
                 }
                 
@@ -233,9 +245,10 @@ object ResumenController {
                 }
                 
                 th { background-color: #B3E6FF }
-                tr:hover { background-color: #f5f5f5 }
+                tr:hover { background-color: #D7DBDD }
                 
-                table { margin: 0 }
+                table { margin: 0;
+                background-color: #FBFCFC}
                 
             """.trimIndent()
         )
