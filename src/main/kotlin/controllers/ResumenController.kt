@@ -65,11 +65,12 @@ object ResumenController {
                 count { it.tipoCont == "ORGANICA" } into "Organica"
                 count { it.tipoCont == "ENVASES" } into "Envases"
                 count { it.tipoCont == "VIDRIO" } into "Vidrio"
-            }
+            }.sortBy { it["Distrito"] }
 
         logger.debug { "Media de contenedores de cada tipo por distrito" }
-        mediaTipoContXDistrito = dfCont.groupBy { it.distritoCont and it.tipoCont }
-            .aggregate { mean { it.cantidadCont } into "Media" }.sortBy { it.distritoCont }
+        mediaTipoContXDistrito =
+            dfCont.groupBy { it.distritoCont.rename("Distrito") and it.tipoCont.rename("Contenedores") }
+                .aggregate { mean { it.cantidadCont } into "Media" }.sortBy { it["Distrito"] }
 
         logger.debug { "Media de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito" }
         mediaTonResiDistritos =
@@ -82,19 +83,19 @@ object ResumenController {
                 .aggregate {
                     max { it.toneladasResi } into "Max"
                     min { it.toneladasResi } into "Min"
-                    median { it.toneladasResi } into "Mediana"
-                    std { it.toneladasResi } into "Desviación"
+                    mean { it.toneladasResi } into "Media"
+                    std { it.toneladasResi } into "Desviacion"
                 }.sortBy { it["Distrito"] }
 
         logger.debug { "Suma de las toneladas recogidas en un año por distrito" }
         sumToneladasDistrito =
             dfResi.groupBy { it.nomDistritoResi.rename("Distrito") }
-                .aggregate { sum { it.toneladasResi } into "Total Toneladas" }.sortBy { it["Distrito"] }
+                .aggregate { sum { it.toneladasResi } into "TotalToneladas" }.sortBy { it["Distrito"] }
 
         logger.debug { "Por cada distrito obtener para cada tipo de residuo la cantidad recogida" }
         toneladasDistrito = dfResi.groupBy { it.nomDistritoResi.rename("Distrito") and it.tipoResi.rename("Tipo") }
             .aggregate {
-                sum { it.toneladasResi } into "Total Toneladas"
+                sum { it.toneladasResi } into "TotalToneladas"
             }.sortBy { it["Distrito"] }
 
         //--- GRAFICAS ---
@@ -126,80 +127,117 @@ object ResumenController {
 
     private fun createHmtl(dirDestino: String, tiempo: String, fecha: String) {
         val workingDir: String = System.getProperty("user.dir")
-        val pathPlot = File("${workingDir}${fs}lets-plot-images${fs}ContenedoresPorDistrito.png")
+        val pathPlot1 = File("${workingDir}${fs}lets-plot-images${fs}ContenedoresPorDistrito.png")
         val fileHmtl = File(dirDestino + "ResumenGlobal.html")
+        val fileCss = File(dirDestino + "ResumenGlobal.css")
 
         var data1 = ""
         for (i in numTipoContXDistrito) {
-            data1 += "<li>$i</li>"
+            data1 += """<tr><td>${i["Distrito"]}</td><td>${i["Restos"]}</td><td>${i["Papel-Carton"]}</td>
+            <td>${i["Organica"]}</td><td>${i["Envases"]}</td><td>${i["Vidrio"]}</td></tr>""".trimIndent()
         }
         var data2 = ""
         for (i in mediaTipoContXDistrito) {
-            data2 += "<li>$i</li>"
+            data2 += """<tr><td>${i["Distrito"]}</td><td>${i["Contenedores"]}</td><td>${i["Media"]}"""
         }
         var data3 = ""
         for (i in mediaTonResiDistritos) {
-            data3 += "<li>$i</li>"
+            data3 += """<tr><td>${i["Distrito"]}</td><td>${i["Tipo"]}</td><td>${i["Media"]}</td></tr>
+            """.trimIndent()
         }
         var data4 = ""
         for (i in maxToneladasDistrito) {
-            data4 += "<li>$i</>"
+            data4 += """<tr><td>${i["Distrito"]}</td><td>${i["Tipo"]}</td><td>${i["Max"]}</td><td>${i["Min"]}</td>
+                <td>${i["Media"]}</td><td>${i["Desviacion"]}</td></tr>""".trimIndent()
         }
         var data5 = ""
         for (i in sumToneladasDistrito) {
-            data5 += "<li>$i</>"
+            data5 += """<tr><td>${i["Distrito"]}</td><td>${i["TotalToneladas"]}</td></tr>"""
         }
         var data6 = ""
         for (i in toneladasDistrito) {
-            data6 += "<li>$i</li>"
+            data6 += """<tr><td>${i["Distrito"]}</td><td>${i["Tipo"]}</td><td>${i["TotalToneladas"]}</td></tr>"""
         }
-
 
         fileHmtl.writeText(
             """
             <!DOCTYPE html>
             <html>
-                <head></head>
+                <head><link rel="stylesheet" href="$fileCss"></head>
                 <body>
-                  <div class="cabecera">
-                    <h1>Resumen de recogidas de basura y reciclaje en Madrid</h1>
-                    <h4>Fecha y Hora: $fecha</h4>
-                    <h4>Autores: Mario Resa y Sebastián Mendoza</h4>
-                  </div>
-                  <div class="resumen">
-                    <h3>Número de contenedores de cada tipo que hay en cada distrito</h3>
-                    <ul>
-                    $data1
-                    </ul>
-                    <h3>Media de contenedores de cada tipo que hay en cada distrito</h3>
-                    <ul>
-                    $data2
-                    </ul>
-                    <h3>Total de contenedores por distrito(gráfica)</h3>
-                    <img src="$pathPlot" width="600">
-                    <h3>Media de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito</h3>
-                    <ul>
-                    $data3
-                    </ul>
-                    <h3>Media de toneladas mensuales de recogida de basura por distrito</h3>
-                    <img src="..\lets-plot-images\grafica_prueba.png" width="600">
-                    <h3>Máximo, mínimo , media y desviación de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito</h3>
-                    <ul>
-                    $data4
-                    </ul>
-                    <h3>Suma de todo lo recogido en un año por distrito</h3>
-                    <ul>
-                    $data5
-                    </ul>
-                    <h3>Por cada distrito obtener para cada tipo de residuo la cantidad recogida</h3>
-                    <ul>
-                    $data6
-                    </ul>
-                    <h4>Tiempo: $tiempo ms</h4>
-                  </div>
+                    <div class="container">
+                      <div class="cabecera">
+                        <h1>Resumen de recogidas de basura y reciclaje en Madrid</h1>
+                        <h4>Fecha y Hora: $fecha</h4>
+                        <h4>Autores: Mario Resa y Sebastián Mendoza</h4>
+                      </div>
+                      <div class="resumen">
+                        <h3>Número de contenedores de cada tipo que hay en cada distrito</h3>
+                        <table border="1">
+                        <tr><th>Distrito</th><th>Restos</th><th>Papel-Carton</th><th>Organica</th><th>Envases</th><th>Vidrio</th></tr>
+                        $data1
+                        </table>
+                        <h3>Media de contenedores de cada tipo que hay en cada distrito</h3>
+                        <table border="1">
+                        <tr><th>Distrito</th><th>Contenedor</th><th>Media</th></tr>
+                        $data2
+                        </table>
+                        <h3>Total de contenedores por distrito</h3>
+                        <img src="$pathPlot1" width="700">
+                        <h3>Media de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito</h3>
+                        <table border="1">
+                        <tr><th>Distrito</th><th>Tipo</th><th>Media</th></tr>
+                        $data3
+                        </table>
+                        <h3>Media de toneladas mensuales de recogida de basura por distrito</h3>
+                        <img src="..\lets-plot-images\grafica_prueba.png" width="700">
+                        <h3>Máximo, mínimo , media y desviación de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito</h3>
+                        <table border="1">
+                        <tr><th>Distrito</th><th>Tipo</th><th>Maximo</th><th>Minimo</th><th>Media</th><th>Desviacion</th></tr>
+                        $data4
+                        </table>
+                        <h3>Suma de todo lo recogido en un año por distrito</h3>
+                        <table border="1">
+                        <tr><th>Distrito</th><th>Total Toneladas</th></tr>
+                        $data5
+                        </table>
+                        <h3>Por cada distrito obtener para cada tipo de residuo la cantidad recogida</h3>
+                        <table border="1">
+                        <tr><th>Distrito</th><th>Tipo</th><th>Total Toneladas</th></tr>
+                        $data6
+                        </table>
+                        <h3>Tiempo de generacion: $tiempo ms</h3>
+                      </div>
+                    </div>
                 </body>
             </html>
         """.trimIndent()
+        )
+
+        fileCss.writeText(
+            """ body { margin: 0 }
+                
+                .cabecera {
+                background-color: #f5f5f5;
+                width: 100%;
+                }
+                
+                .container, .resumen { 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                flex-direction: column
+                }
+                
+                h3,td, .cabecera { text-align: center 
+                }
+                
+                th { background-color: #B3E6FF }
+                tr:hover { background-color: #f5f5f5 }
+                
+                table { margin: 0 }
+                
+            """.trimIndent()
         )
     }
 
