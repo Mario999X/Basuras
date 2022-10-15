@@ -57,7 +57,7 @@ fun loadCsvCont(csvFile: File): List<Contenedores> {
                 descModeloCont = it[3],
                 cantidadCont = it[4].toInt(),
                 loteCont = it[5],
-                distritoCont = it[6],
+                distritoCont = arreglarEspacios(it[6]),
                 barrioCont = it[7],
                 viaCont = it[8],
                 nomViaCont = it[9],
@@ -70,4 +70,9 @@ fun loadCsvCont(csvFile: File): List<Contenedores> {
             )
         }
     return contenedores
+}
+
+fun arreglarEspacios(dato: String): String {
+    val nuevo = dato.replace("\u00a0".toRegex(), " ")
+    return nuevo.uppercase()
 }

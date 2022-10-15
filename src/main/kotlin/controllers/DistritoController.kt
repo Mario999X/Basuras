@@ -48,7 +48,7 @@ object DistritoController {
 
         logger.debug { "Número de contenedores de cada tipo, distrito específico" }
         val numTipoContXDistrito =
-            dfCont.filter { it.distritoCont == distrito }
+            dfCont.filter { it.distritoCont == distrito }.groupBy { it.distritoCont }
                 .aggregate {
                     count { it.tipoCont == "RESTO" } into "Restos"
                     count { it.tipoCont == "PAPEL-CARTON" } into "Papel-Carton"
