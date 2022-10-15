@@ -14,6 +14,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+
 }
 
 dependencies {
@@ -34,6 +35,7 @@ dependencies {
     // https://github.com/pdvrieze/xmlutil
     implementation("io.github.pdvrieze.xmlutil:core-jvm:0.84.3")
     implementation("io.github.pdvrieze.xmlutil:serialization-jvm:0.84.3")
+
 }
 
 tasks.test {
