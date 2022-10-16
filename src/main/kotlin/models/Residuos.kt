@@ -74,8 +74,8 @@ fun punto(dato: String): Double {
  */
 fun igualarString(dato: String): String {
     var nuevo: String = Normalizer.normalize(dato, Normalizer.Form.NFD).replace("[^\\p{ASCII}]".toRegex(), "")
-    if (dato.contains("-")){
-        nuevo = Normalizer.normalize(dato, Normalizer.Form.NFD).replace(" ", "")
+    if (dato.contains(" - ")){
+        nuevo = Normalizer.normalize(dato, Normalizer.Form.NFD).replace(" - ", "-")
     }
     return nuevo.uppercase()
 }

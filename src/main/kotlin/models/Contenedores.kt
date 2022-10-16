@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 import nl.adaptivity.xmlutil.serialization.XmlElement
 import org.jetbrains.kotlinx.dataframe.annotations.DataSchema
 import java.io.File
+import java.text.Normalizer
 
 @DataSchema
 @Serializable
@@ -89,6 +90,9 @@ fun loadCsvCont(csvFile: File): List<Contenedores> {
  * @return Variable con los espacios cambiados
  */
 fun arreglarEspacios(dato: String): String {
-    val nuevo = dato.replace("\u00a0".toRegex(), " ")
+    var nuevo = dato.replace("\u00a0".toRegex(), " ")
+    if (dato.contains(" - ")){
+        nuevo = Normalizer.normalize(dato, Normalizer.Form.NFD).replace(" - ", "-")
+    }
     return nuevo.uppercase()
 }
