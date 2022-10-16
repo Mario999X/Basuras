@@ -1,5 +1,8 @@
 package models
 
+/**
+ * @author Mario Resa y Sebastián Mendoza
+ */
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import nl.adaptivity.xmlutil.serialization.XmlElement
@@ -45,6 +48,12 @@ data class Contenedores(
 
 )
 
+/**
+ * LoadCsvCont Función que lee el CSV facilitado y lo guarda en una lista de tipo Contenedores
+ *
+ * @param csvFile Parámetro de tipo File donde se indicará el CSV que se va a leer
+ * @return Variable de tipo Lista de Contenedores obtenida en la lectura del CSV
+ */
 fun loadCsvCont(csvFile: File): List<Contenedores> {
     val contenedores: List<Contenedores> = csvFile.readLines()
         .drop(1)
@@ -73,6 +82,12 @@ fun loadCsvCont(csvFile: File): List<Contenedores> {
     return contenedores
 }
 
+/**
+ * ArreglarEspacios Función que remplaza los espacios en formato Unicode a espacios normales
+ *
+ * @param dato Variable de tipo String al que se le realiza el cambio
+ * @return Variable con los espacios cambiados
+ */
 fun arreglarEspacios(dato: String): String {
     val nuevo = dato.replace("\u00a0".toRegex(), " ")
     return nuevo.uppercase()

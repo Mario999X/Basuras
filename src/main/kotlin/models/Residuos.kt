@@ -1,5 +1,8 @@
 package models
 
+/**
+ * @author Mario Resa y Sebastián Mendoza
+ */
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import nl.adaptivity.xmlutil.serialization.XmlElement
@@ -27,6 +30,12 @@ data class Residuos(
     val toneladasResi: Double
 )
 
+/**
+ * LoadCsvResi Función que lee el CSV facilitado y lo guarda en una lista de tipo Residuos
+ *
+ * @param csvFile Parámetro de tipo File donde se indicará el CSV que se va a leer
+ * @return Variable de tipo Lista de Residuos obtenida en la lectura del CSV
+ */
 fun loadCsvResi(csvFile: File): List<Residuos> {
     val residuos: List<Residuos> = csvFile.readLines()
         .drop(1)
@@ -46,12 +55,23 @@ fun loadCsvResi(csvFile: File): List<Residuos> {
     return residuos
 }
 
+/**
+ * punto Función que cambia las comas en puntos para poder realizar los cálculos de las filtraciones
+ *
+ * @param dato Variable de tipo String que se le aplica el cambio
+ * @return Variable de tipo Double con el que se puede hacer cálculos
+ */
 fun punto(dato: String): Double {
     val nuevo: String = dato.replace(",", ".")
     return nuevo.toDouble()
 }
 
-// Tuve que igualar el estilo de los nombres al otro CSV, aqui CHAMBERI estaba en minuscula y con tilde
+/**
+ * IgualarString Función que "normaliza" el String de la lectura del CSV para poder trabajar en el listado
+ *
+ * @param dato Variable de tip String al que se le hará la normalización
+ * @return Variable normalizada y transformada en mayúsculas para su uso en el filtrado
+ */
 fun igualarString(dato: String): String {
     val nuevo: String = Normalizer.normalize(dato, Normalizer.Form.NFD).replace("[^\\p{ASCII}]".toRegex(), "")
     return nuevo.uppercase()

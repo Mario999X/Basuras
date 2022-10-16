@@ -1,5 +1,8 @@
 package controllers
 
+/**
+ * @author Mario Resa y Sebastián Mendoza
+ */
 import kotlinx.serialization.encodeToString
 import models.*
 import mu.KotlinLogging
@@ -16,8 +19,20 @@ import kotlin.system.measureTimeMillis
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * ParserController Clase objeto donde se controla la transformación de los CSV facilitados en archivos nuevos de CSV, JSON y XML
+ *
+ * @constructor Crea un ParserController
+ */
 object ParserController {
     private val fs = File.separator
+
+    /**
+     * Init() Función que inicia la transformación de los archivos facilitados
+     *
+     * @param dirOrigen Directorio de origen que se ha facilitado
+     * @param dirDestino Directorio de destino que se ha facilitado
+     */
     fun init(dirOrigen: String, dirDestino: String) {
         logger.debug { "Creando archivos..." }
         val csvContenedores = dirOrigen + fs + "contenedores_varios.csv"
@@ -35,6 +50,13 @@ object ParserController {
         logger.debug { "Tiempo: $tiempo ms" }
     }
 
+    /**
+     * ParserCsv Función que realiza la transformación de los archivos en CSV, JSON y XML
+     *
+     * @param cont Lista de contenedores obtenida con la lectura del primer CSV ("contenedores_varios.csv")
+     * @param resi Lista de residuos obtenida con la lectura del segundo CSV ("modelo residuos_2021.csv")
+     * @param destino Directorio de destino de los nuevos archivos
+     */
     private fun parserCsv(cont: List<Contenedores>, resi: List<Residuos>, destino: String) {
         val dfCont by lazy { cont.toDataFrame() }
         val dfResi by lazy { resi.toDataFrame() }
@@ -55,6 +77,12 @@ object ParserController {
         residuosXml.writeText(xml.encodeToString(resi))
     }
 
+    /**
+     * CreateInforme Función que realiza la creación de un informe en formato XML
+     * con el resultado exitoso o no de la función ParserController.kt
+     *
+     * @param tiempo Medición de tiempo del proceso
+     */
     private fun createInforme(tiempo: String) {
         val informe = Informe(
             UUID.randomUUID().toString(),

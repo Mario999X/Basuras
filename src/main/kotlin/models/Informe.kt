@@ -1,5 +1,8 @@
 package models
 
+/**
+ * @author Mario Resa y Sebastián Mendoza
+ */
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -26,6 +29,12 @@ data class Informe(
     companion object
 }
 
+/**
+ * WriteToXmlFile Función que crea el informe en formato XML
+ *
+ * @param informe Parámetro de tipo Informe que almacena la información a guardar
+ * @param xmlFile Parámetro de tipo File donde se guardará el informe
+ */
 fun Informe.Companion.writeToXmlFile(informe: Informe, xmlFile: File) {
     logger.debug { "Escribiendo informe..." }
     val xml = XML { indentString = " " }

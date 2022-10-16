@@ -1,5 +1,8 @@
 package controllers
 
+/**
+ * @author Mario Resa y Sebastián Mendoza
+ */
 import jetbrains.letsPlot.*
 import jetbrains.letsPlot.export.ggsave
 import jetbrains.letsPlot.geom.geomBar
@@ -20,6 +23,12 @@ import kotlin.system.measureTimeMillis
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * ResumenController Clase object donde se controla la filtración de los CSV en general y
+ * la creación de del informe en formato HTML y en XML
+ *
+ * @constructor Crea un ResumenController
+ */
 object ResumenController {
     private val fs = File.separator
 
@@ -31,6 +40,12 @@ object ResumenController {
     private lateinit var sumToneladasDistrito: DataFrame<Residuos>
     private lateinit var toneladasDistrito: DataFrame<Residuos>
 
+    /**
+     * Init() Función que inicia el filtrado y el informe en general
+     *
+     * @param dirOrigen Directorio de origen que se ha facilitado
+     * @param dirDestino Directorio de destino que se ha facilitado
+     */
     fun init(dirOrigen: String, dirDestino: String) {
         val csvContenedores = dirOrigen + fs + "contenedores_varios.csv"
         val csvResiduos = dirOrigen + fs + "modelo_residuos_2021.csv"
@@ -49,10 +64,17 @@ object ResumenController {
         val fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss"))
         logger.debug { fecha }
 
-        createHmtl(destinoPath, tiempo.toString(), fecha)
+        createHtmlResumen(destinoPath, tiempo.toString(), fecha)
         logger.debug { "Resumen HTML realizado" }
     }
 
+    /**
+     * ProcesoFiltrados Función que realiza los filtrados del CSV de forma general,
+     * además de la creación de las gráficas y el informe en XML
+     *
+     * @param cont Lista de contenedores obtenida con la lectura del primer CSV ("contenedores_varios.csv")
+     * @param resi Lista de residuos obtenida con la lectura del segundo CSV ("modelo residuos_2021.csv")
+     */
     private fun procesoFiltrados(cont: List<Contenedores>, resi: List<Residuos>) {
         logger.debug { "Inicio de filtrado general..." }
         val dfCont by lazy { cont.toDataFrame() }
@@ -102,9 +124,9 @@ object ResumenController {
 
         //--- GRAFICAS ---
         //(Total contenedores X Distrito)
-
-        val numContenedores = dfCont.groupBy { it.distritoCont }.aggregate { count() into "contenedores" }.sortBy { it.distritoCont }
-        val fig: Plot = letsPlot(data = numContenedores.toMap()) + geomBar(
+        val numContenedores =
+            dfCont.groupBy { it.distritoCont }.aggregate { count() into "contenedores" }.sortBy { it.distritoCont }
+        var fig: Plot = letsPlot(data = numContenedores.toMap()) + geomBar(
             stat = Stat.identity, alpha = 0.8
         ) {
             x = "distritoCont"; y = "contenedores"
@@ -115,7 +137,8 @@ object ResumenController {
 
         //(Grafico de media de toneladas mensuales de recogida de basura por distrito.)
         val mediaToneladas =
-            dfResi.groupBy { it.mesResi.rename("Mes") and it.nomDistritoResi.rename("Distrito") }.aggregate { mean { it.toneladasResi } into "Media" }
+            dfResi.groupBy { it.mesResi.rename("Mes") and it.nomDistritoResi.rename("Distrito") }
+                .aggregate { mean { it.toneladasResi } into "Media" }
         fig = letsPlot(data = mediaToneladas.toMap()) +
                 geomTile(height = 0.9, width = 0.9) { x = "Distrito"; y = "Mes"; fill = "Media" } +
                 theme(panelBackground = elementBlank(), panelGrid = elementBlank()) + scaleFillGradient(
@@ -125,10 +148,16 @@ object ResumenController {
         ggsave(fig, "ToneladasPorDistrito.png")
     }
 
+    /**
+     * CreateInforme Función que realiza la creación de un informe en formato XML
+     * con el resultado exitoso o no de la función ResumenController.kt
+     *
+     * @param tiempo Medición de tiempo del proceso
+     */
     private fun createInforme(tiempo: String) {
         val informe = Informe(
             UUID.randomUUID().toString(),
-            LocalDateTime.now().toString(),
+            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).toString(),
             "Resumen Global",
             "Proceso Exitoso",
             "$tiempo milisegundos"
@@ -136,11 +165,18 @@ object ResumenController {
         Informe.writeToXmlFile(informe, File("bitacora${fs}bitacora.xml"))
     }
 
-    private fun createHmtl(dirDestino: String, tiempo: String, fecha: String) {
+    /**
+     * CreateHtmlResumen Función que realiza el informe en formato HTML del filtrado general
+     *
+     * @param dirDestino Directorio de destino de los nuevos archivos
+     * @param tiempo Medición de tiempo del proceso
+     * @param fecha Fecha del momento de la realización del proceso
+     */
+    private fun createHtmlResumen(dirDestino: String, tiempo: String, fecha: String) {
         val workingDir: String = System.getProperty("user.dir")
         val pathPlot1 = File("${workingDir}${fs}lets-plot-images${fs}ContenedoresPorDistrito.png")
         val pathPlot2 = File("${workingDir}${fs}lets-plot-images${fs}ToneladasPorDistrito.png")
-        val fileHmtl = File(dirDestino + "ResumenGlobal.html")
+        val fileHtml = File(dirDestino + "ResumenGlobal.html")
         val fileCss = File(dirDestino + "ResumenGlobal.css")
 
         var data1 = ""
@@ -171,7 +207,7 @@ object ResumenController {
             data6 += """<tr><td>${i["Distrito"]}</td><td>${i["Tipo"]}</td><td>${i["TotalToneladas"]}</td></tr>"""
         }
 
-        fileHmtl.writeText(
+        fileHtml.writeText(
             """
             <!DOCTYPE html>
             <html>
@@ -181,10 +217,10 @@ object ResumenController {
                       <div class="cabecera">
                         <h1>Resumen de recogidas de basura y reciclaje en Madrid</h1>
                         <h4>Fecha y Hora: $fecha</h4>
-                        <h4>Autores: Mario Resa y Sebastián Mendoza</h4>
+                        <h4>Autores: Mario Resa y Sebastian Mendoza</h4>
                       </div>
                       <div class="resumen">
-                        <h3>Número de contenedores de cada tipo que hay en cada distrito</h3>
+                        <h3>Numero de contenedores de cada tipo que hay en cada distrito</h3>
                         <table border="1">
                         <tr><th>Distrito</th><th>Restos</th><th>Papel-Carton</th><th>Organica</th><th>Envases</th><th>Vidrio</th></tr>
                         $data1
@@ -203,7 +239,7 @@ object ResumenController {
                         </table>
                         <h3>Media de toneladas mensuales de recogida de basura por distrito</h3>
                         <img src="$pathPlot2" width="700">
-                        <h3>Máximo, mínimo , media y desviación de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito</h3>
+                        <h3>Maximo, minimo , media y desviacion de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito</h3>
                         <table border="1">
                         <tr><th>Distrito</th><th>Tipo</th><th>Maximo</th><th>Minimo</th><th>Media</th><th>Desviacion</th></tr>
                         $data4

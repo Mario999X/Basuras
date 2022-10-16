@@ -5,6 +5,12 @@ import controllers.ParserController
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
+
+/**
+ * Main Función principal donde se trabaja la lógica de los argumentos introducidos en la ejecución del programa
+ *
+ * @param args Array de tipo String donde se almacenan los argumentos introducidos
+ */
 fun main(args: Array<String>) {
     logger.debug { "Ejecutando aplicación" }
     when (args.size) {
