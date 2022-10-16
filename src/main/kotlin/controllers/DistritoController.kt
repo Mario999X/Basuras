@@ -66,8 +66,8 @@ object DistritoController {
         val fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss"))
         logger.debug { fecha }
 
-        createHtmlDistrito(distritoMain, destinoPath, tiempo.toString(), fecha)
-        logger.debug { "Resumen $distritoMain HTML realizado" }
+        createHtmlDistrito(distrito, destinoPath, tiempo.toString(), fecha)
+        logger.debug { "Resumen $distrito HTML realizado" }
     }
 
     /**
@@ -130,7 +130,7 @@ object DistritoController {
         } + labs(
             x = "Residuos", y = "Toneladas", title = "Total Toneladas por Residuo en $distrito"
         )
-        ggsave(fig, "ToneladasPorResiduo.png")
+        ggsave(fig, "ToneladasPorResiduo${distrito}.png")
 
         // Gráfico (Máximo, mínimo y media por meses en dicho distrito)
         fig = letsPlot(data = operacionesToneladas.toMap()) + geomBar(
@@ -156,7 +156,7 @@ object DistritoController {
             y = "Operaciones",
             title = "Máximo, media y minimo para $distrito"
         )
-        ggsave(fig, "OperacionesDistrito.png")
+        ggsave(fig, "Operaciones${distrito}.png")
 
     }
 
@@ -184,27 +184,30 @@ object DistritoController {
     /**
      * CreateHtmlDistrito Función que realiza el informe en formato HTML del filtrado por distrito
      *
-     * @param distritoMain Parámetro don de se especifica el distrito a filtrar
+     * @param distrito Parámetro don de se especifica el distrito a filtrar
      * @param dirDestino Directorio de destino facilitado
      * @param tiempo Medición de tiempo del proceso
      * @param fecha Fecha del momento de la realización del proceso
      */
-    private fun createHtmlDistrito(distritoMain: String, dirDestino: String, tiempo: String, fecha: String) {
+    private fun createHtmlDistrito(distrito: String, dirDestino: String, tiempo: String, fecha: String) {
         val workingDir: String = System.getProperty("user.dir")
-        val pathPlot1 = File("${workingDir}${fs}lets-plot-images${fs}ToneladasPorResiduo.png")
-        val pathPlot2 = File("${workingDir}${fs}lets-plot-images${fs}OperacionesDistrito.png")
-        val fileHtml = File(dirDestino + "resumen_${distritoMain}.html")
-        val fileCss = File(dirDestino + "resumen_${distritoMain}.css")
+        val pathPlot1 = File("${workingDir}${fs}lets-plot-images${fs}ToneladasPorResiduo${distrito}.png")
+        val pathPlot2 = File("${workingDir}${fs}lets-plot-images${fs}Operaciones${distrito}.png")
+        val fileHtml = File(dirDestino + "resumen_${distrito}.html")
+        val fileCss = File(dirDestino + "resumen_distrito.css")
 
         val data1 =
-            """<tr><td>${numTipoContXDistrito[0]}</td><td>${numTipoContXDistrito[1]}</td><td>${numTipoContXDistrito[2]}</td><td>${numTipoContXDistrito[3]}</td><td>${numTipoContXDistrito[4]}</td></tr>""".trimIndent()
+            """<tr><td>${numTipoContXDistrito[0]}</td><td>${numTipoContXDistrito[1]}</td>
+                <td>${numTipoContXDistrito[2]}</td><td>${numTipoContXDistrito[3]}</td>
+                <td>${numTipoContXDistrito[4]}</td></tr>""".trimIndent()
         var data2 = ""
         for (i in totalTonResiDistrito) {
-            data2 += """<tr><td>${i["Tipo"]}</td><td>${i["Total"]}</td></tr>""".trimIndent()
+            data2 += """<tr><td>${i["Tipo"]}</td><td>${i["Total"]}</td></tr>"""
         }
         var data3 = ""
         for (i in operacionesToneladas) {
-            data3 += """<tr><td>${i["Tipo"]}</td><td>${i["Max"]}</td><td>${i["Min"]}</td><td>${i["Media"]}</td><td>${i["Desviacion"]}</td></tr>""".trimIndent()
+            data3 += """<tr><td>${i["Tipo"]}</td><td>${i["Max"]}</td><td>${i["Min"]}</td><td>${i["Media"]}</td>
+                <td>${i["Desviacion"]}</td></tr>""".trimIndent()
         }
 
         fileHtml.writeText(
@@ -215,7 +218,7 @@ object DistritoController {
                     <body>
                         <div class="container">
                             <div class="cabecera">
-                                <h1>Resumen de recogidas de basura y reciclaje en $distritoMain</h1>
+                                <h1>Resumen de recogidas de basura y reciclaje en $distrito</h1>
                                 <h4>Fecha y Hora: $fecha</h4>
                                 <h4>Autores: Mario Resa y Sebastian Mendoza</h4>
                             </div>
@@ -239,7 +242,7 @@ object DistritoController {
                                 </table>
                                 <h3>maximo, minimo y media por meses en dicho distrito</h3>
                                 <img src="$pathPlot2" width="700">
-                                <h5>Tiempo de generacion: $tiempo ms</h5>
+                                <h3>Tiempo de generacion: $tiempo ms</h3>
                             </div>
                         </div>
                     </body>
