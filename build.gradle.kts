@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "es.mendozaresa"
-version = "1.0-SNAPSHOT"
+version = ""
 
 repositories {
     mavenCentral()
@@ -35,11 +35,30 @@ dependencies {
     // https://github.com/pdvrieze/xmlutil
     implementation("io.github.pdvrieze.xmlutil:core-jvm:0.84.3")
     implementation("io.github.pdvrieze.xmlutil:serialization-jvm:0.84.3")
-
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+tasks {
+    val fatJar = register<Jar>("fatJar") {
+        dependsOn.addAll(listOf("compileJava", "compileKotlin", "processResources")) // We need this for Gradle optimization to work
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        manifest { attributes(mapOf("Main-Class" to application.mainClass)) } // Provided we set it up in the application plugin configuration
+        val sourcesMain = sourceSets.main.get()
+        val contents = configurations.runtimeClasspath.get()
+            .map { if (it.isDirectory) it else zipTree(it) } +
+                sourcesMain.output
+        from(contents)
+    }
+    build {
+        dependsOn(fatJar) // Trigger fat jar creation during build
+    }
+}
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = "MainKt"
+    }
 }
 
 tasks.withType<KotlinCompile> {
