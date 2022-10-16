@@ -104,7 +104,7 @@ object ResumenController {
         logger.debug { "Máximo, mínimo, media y desviación de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito" }
         maxToneladasDistrito =
             dfResi.groupBy { it.nomDistritoResi.rename("Distrito") and it.tipoResi.rename("Tipo") }
-                .aggregate { it ->
+                .aggregate {
                     max { it.toneladasResi } into "Max"
                     min { it.toneladasResi } into "Min"
                     mean { it.toneladasResi } into "Media"
