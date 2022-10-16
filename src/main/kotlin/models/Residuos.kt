@@ -56,7 +56,7 @@ fun loadCsvResi(csvFile: File): List<Residuos> {
 }
 
 /**
- * punto Función que cambia las comas en puntos para poder realizar los cálculos de las filtraciones
+ * Punto Función que cambia las comas en puntos para poder realizar los cálculos de las filtraciones
  *
  * @param dato Variable de tipo String que se le aplica el cambio
  * @return Variable de tipo Double con el que se puede hacer cálculos
@@ -74,8 +74,5 @@ fun punto(dato: String): Double {
  */
 fun igualarString(dato: String): String {
     var nuevo: String = Normalizer.normalize(dato, Normalizer.Form.NFD).replace("[^\\p{ASCII}]".toRegex(), "")
-    if (dato.contains("-")){
-        nuevo = Normalizer.normalize(dato, Normalizer.Form.NFD).replace(" ", "")
-    }
     return nuevo.uppercase()
 }
