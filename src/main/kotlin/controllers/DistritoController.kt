@@ -66,8 +66,8 @@ object DistritoController {
         val fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss"))
         logger.debug { fecha }
 
-        createHtmlDistrito(distritoMain, destinoPath, tiempo.toString(), fecha)
-        logger.debug { "Resumen $distritoMain HTML realizado" }
+        createHtmlDistrito(distrito, destinoPath, tiempo.toString(), fecha)
+        logger.debug { "Resumen $distrito HTML realizado" }
     }
 
     /**
@@ -184,16 +184,16 @@ object DistritoController {
     /**
      * CreateHtmlDistrito Función que realiza el informe en formato HTML del filtrado por distrito
      *
-     * @param distritoMain Parámetro don de se especifica el distrito a filtrar
+     * @param distrito Parámetro don de se especifica el distrito a filtrar
      * @param dirDestino Directorio de destino facilitado
      * @param tiempo Medición de tiempo del proceso
      * @param fecha Fecha del momento de la realización del proceso
      */
-    private fun createHtmlDistrito(distritoMain: String, dirDestino: String, tiempo: String, fecha: String) {
+    private fun createHtmlDistrito(distrito: String, dirDestino: String, tiempo: String, fecha: String) {
         val workingDir: String = System.getProperty("user.dir")
-        val pathPlot1 = File("${workingDir}${fs}lets-plot-images${fs}ToneladasPorResiduo${distritoMain}.png")
-        val pathPlot2 = File("${workingDir}${fs}lets-plot-images${fs}Operaciones${distritoMain}.png")
-        val fileHtml = File(dirDestino + "resumen_${distritoMain}.html")
+        val pathPlot1 = File("${workingDir}${fs}lets-plot-images${fs}ToneladasPorResiduo${distrito}.png")
+        val pathPlot2 = File("${workingDir}${fs}lets-plot-images${fs}Operaciones${distrito}.png")
+        val fileHtml = File(dirDestino + "resumen_${distrito}.html")
         val fileCss = File(dirDestino + "resumen_distrito.css")
 
         val data1 =
@@ -218,7 +218,7 @@ object DistritoController {
                     <body>
                         <div class="container">
                             <div class="cabecera">
-                                <h1>Resumen de recogidas de basura y reciclaje en $distritoMain</h1>
+                                <h1>Resumen de recogidas de basura y reciclaje en $distrito</h1>
                                 <h4>Fecha y Hora: $fecha</h4>
                                 <h4>Autores: Mario Resa y Sebastian Mendoza</h4>
                             </div>

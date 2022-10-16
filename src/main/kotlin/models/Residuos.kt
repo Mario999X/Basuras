@@ -73,6 +73,9 @@ fun punto(dato: String): Double {
  * @return Variable normalizada y transformada en mayúsculas para su uso en el filtrado
  */
 fun igualarString(dato: String): String {
-    val nuevo: String = Normalizer.normalize(dato, Normalizer.Form.NFD).replace("[^\\p{ASCII}]".toRegex(), "")
+    var nuevo: String = Normalizer.normalize(dato, Normalizer.Form.NFD).replace("[^\\p{ASCII}]".toRegex(), "")
+    if (dato.contains("-")){
+        nuevo = Normalizer.normalize(dato, Normalizer.Form.NFD).replace(" ", "")
+    }
     return nuevo.uppercase()
 }
