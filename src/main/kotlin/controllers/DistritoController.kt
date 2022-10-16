@@ -36,6 +36,7 @@ object DistritoController {
     private lateinit var numTipoContXDistrito: DataRow<Contenedores>
     private lateinit var totalTonResiDistrito: DataFrame<Residuos>
     private lateinit var operacionesToneladas: DataFrame<Residuos>
+    private lateinit var operacionGrafica: DataFrame<Residuos>
 
     /**
      * Init() Función que inicia el filtrado y el informe por distrito
@@ -119,7 +120,6 @@ object DistritoController {
                 mean(it.toneladasResi) into "Media"
                 std(it.toneladasResi) into "Desviacion"
             }
-        println(operacionesToneladas)
 
         // GRÁFICAS
         //Barras (Total Toneladas X Residuo) en determinado Distrito
@@ -133,28 +133,36 @@ object DistritoController {
         ggsave(fig, "ToneladasPorResiduo${distrito}.png")
 
         // Gráfico (Máximo, mínimo y media por meses en dicho distrito)
-        fig = letsPlot(data = operacionesToneladas.toMap()) + geomBar(
+        operacionGrafica = dfResi.filter { it.nomDistritoResi == distrito }
+            .groupBy { it.mesResi into "Meses" }
+            .aggregate {
+                max(it.toneladasResi) into "Max"
+                min(it.toneladasResi) into "Min"
+                mean(it.toneladasResi) into "Media"
+            }
+
+        fig = letsPlot(data = operacionGrafica.toMap()) + geomBar(
             stat = Stat.identity,
             alpha = 0.8,
             fill = Color.BLACK,
         ) {
-            x = "Tipo"; y = "Max"
+            x = "Meses"; y = "Max"
         } + geomBar(
             stat = Stat.identity,
             alpha = 0.8,
             fill = Color.RED
         ) {
-            x = "Tipo"; y = "Media"
+            x = "Meses"; y = "Media"
         } + geomBar(
             stat = Stat.identity,
             alpha = 0.8,
             fill = Color.PACIFIC_BLUE
         ) {
-            x = "Tipo"; y = "Min"
+            x = "Meses"; y = "Min"
         } + labs(
-            x = "Tipo",
+            x = "Meses",
             y = "Operaciones",
-            title = "Máximo, media y minimo para $distrito"
+            title = "Máximo, media y minimo para $distrito por meses"
         )
         ggsave(fig, "Operaciones${distrito}.png")
 
