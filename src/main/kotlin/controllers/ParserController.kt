@@ -1,7 +1,7 @@
 package controllers
 
 /**
- * @author Mario Resa y Sebastián Mendoza
+ * @author Mario Resa y Sebastian Mendoza
  */
 import kotlinx.serialization.encodeToString
 import models.*
@@ -21,7 +21,7 @@ import kotlin.system.measureTimeMillis
 private val logger = KotlinLogging.logger {}
 
 /**
- * ParserController Clase objeto donde se controla la transformación de los CSV facilitados en archivos nuevos de CSV, JSON y XML
+ * ParserController Clase objeto donde se controla la transformacion de los CSV facilitados en archivos nuevos de CSV, JSON y XML
  *
  * @constructor Crea un ParserController
  */
@@ -30,13 +30,13 @@ object ParserController {
     private var exito: Boolean = true
 
     /**
-     * Init() Función que inicia la transformación de los archivos facilitados
+     * init() Funcion que inicia la transformacion de los archivos facilitados
      *
      * @param dirOrigen Directorio de origen que se ha facilitado
      * @param dirDestino Directorio de destino que se ha facilitado
      */
     fun init(dirOrigen: String, dirDestino: String): Boolean {
-        var proceso = false
+        var proceso: Boolean
         try {
             logger.debug { "Creando archivos..." }
             val csvContenedores = dirOrigen + fs + "contenedores_varios.csv"
@@ -64,7 +64,7 @@ object ParserController {
     }
 
     /**
-     * ParserCsv Función que realiza la transformación de los archivos en CSV, JSON y XML
+     * ParserCsv() Funcion que realiza la transformacion de los archivos en CSV, JSON y XML
      *
      * @param cont Lista de contenedores obtenida con la lectura del primer CSV ("contenedores_varios.csv")
      * @param resi Lista de residuos obtenida con la lectura del segundo CSV ("modelo residuos_2021.csv")
@@ -73,16 +73,16 @@ object ParserController {
     private fun parserCsv(cont: List<Contenedores>, resi: List<Residuos>, destino: String) {
         val dfCont by lazy { cont.toDataFrame() }
         val dfResi by lazy { resi.toDataFrame() }
-        //Selección de columnas
+        //Seleccion de columnas
         val contNuevoCsv = dfCont.select { it.tipoCont and it.cantidadCont and it.distritoCont }
         val resiNuevoCsv = dfResi.select { it.mesResi and it.tipoResi and it.nomDistritoResi and it.toneladasResi }
-        //Creación CSV nuevo
+        //Creacion CSV nuevo
         contNuevoCsv.writeCSV(File(destino + "contenedoresCsv.csv"), CSVFormat.DEFAULT.withDelimiter(';'))
         resiNuevoCsv.writeCSV(File(destino + "residuosCsv.csv"), CSVFormat.DEFAULT.withDelimiter(';'))
-        //Creación de JSON
+        //Creacion de JSON
         contNuevoCsv.writeJson(File(destino + "contenedoresJson.json"), prettyPrint = true)
         resiNuevoCsv.writeJson(File(destino + "residuosJson.json"), prettyPrint = true)
-        //Creación de XML
+        //Creacion de XML
         val xml = XML { indentString = " " }
         val contenedoresXml = File(destino + "contenedoresXML.xml")
         contenedoresXml.writeText(xml.encodeToString(cont))
@@ -91,10 +91,10 @@ object ParserController {
     }
 
     /**
-     * CreateInforme Función que realiza la creación de un informe en formato XML
-     * con el resultado exitoso o no de la función ParserController.kt
+     * createInforme() Funcion que realiza la creacion de un informe en formato XML
+     * con el resultado exitoso o no de la funcion ParserController.kt
      *
-     * @param tiempo Medición de tiempo del proceso
+     * @param tiempo Medicion de tiempo del proceso
      */
     private fun createInforme(tiempo: String) {
         var exitoString = "Proceso exitoso"

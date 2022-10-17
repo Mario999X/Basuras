@@ -7,7 +7,7 @@ import mu.KotlinLogging
 private val logger = KotlinLogging.logger {}
 
 /**
- * Main Función principal donde se trabaja la lógica de los argumentos introducidos en la ejecución del programa
+ * main() Funcion principal donde se trabaja la logica de los argumentos introducidos en la ejecucion del programa
  *
  * @param args Array de tipo String donde se almacenan los argumentos introducidos
  */

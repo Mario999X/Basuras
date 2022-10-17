@@ -1,7 +1,7 @@
 package controllers
 
 /**
- * @author Mario Resa y Sebastián Mendoza
+ * @author Mario Resa y Sebastian Mendoza
  */
 import jetbrains.letsPlot.*
 import jetbrains.letsPlot.export.ggsave
@@ -24,8 +24,8 @@ import kotlin.system.measureTimeMillis
 private val logger = KotlinLogging.logger {}
 
 /**
- * ResumenController Clase object donde se controla la filtración de los CSV en general y
- * la creación de del informe en formato HTML y en XML
+ * ResumenController Clase object donde se controla la filtracion de los CSV en general y
+ * la creacion de del informe en formato HTML y en XML
  *
  * @constructor Crea un ResumenController
  */
@@ -41,7 +41,7 @@ object ResumenController {
     private lateinit var toneladasDistrito: DataFrame<Residuos>
 
     /**
-     * Init() Función que inicia el filtrado y el informe en general
+     * init() Funcion que inicia el filtrado y el informe en general
      *
      * @param dirOrigen Directorio de origen que se ha facilitado
      * @param dirDestino Directorio de destino que se ha facilitado
@@ -69,8 +69,8 @@ object ResumenController {
     }
 
     /**
-     * ProcesoFiltrados Función que realiza los filtrados del CSV de forma general,
-     * además de la creación de las gráficas y el informe en XML
+     * procesoFiltrados() Funcion que realiza los filtrados del CSV de forma general,
+     * ademas de la creacion de las graficas y el informe en XML
      *
      * @param cont Lista de contenedores obtenida con la lectura del primer CSV ("contenedores_varios.csv")
      * @param resi Lista de residuos obtenida con la lectura del segundo CSV ("modelo residuos_2021.csv")
@@ -81,7 +81,7 @@ object ResumenController {
         val dfResi by lazy { resi.toDataFrame() }
 
         // FILTRADOS
-        logger.debug { "Número de contenedores de cada tipo que hay en cada distrito" }
+        logger.debug { "Numero de contenedores de cada tipo que hay en cada distrito" }
         numTipoContXDistrito = dfCont.groupBy { it.distritoCont.rename("Distrito") }
             .aggregate {
                 count { it.tipoCont == "RESTO" } into "Restos"
@@ -101,7 +101,7 @@ object ResumenController {
             dfResi.groupBy { it.nomDistritoResi.rename("Distrito") and it.tipoResi.rename("Tipo") }
                 .aggregate { mean { it.toneladasResi } into "Media" }.sortBy { it["Distrito"] }
 
-        logger.debug { "Máximo, mínimo, media y desviación de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito" }
+        logger.debug { "Maximo, minimo, media y desviacion de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito" }
         maxToneladasDistrito =
             dfResi.groupBy { it.nomDistritoResi.rename("Distrito") and it.tipoResi.rename("Tipo") }
                 .aggregate {
@@ -149,10 +149,10 @@ object ResumenController {
     }
 
     /**
-     * CreateInforme Función que realiza la creación de un informe en formato XML
-     * con el resultado exitoso o no de la función ResumenController.kt
+     * createInforme() Funcion que realiza la creacion de un informe en formato XML
+     * con el resultado exitoso o no de la funcion ResumenController.kt
      *
-     * @param tiempo Medición de tiempo del proceso
+     * @param tiempo Medicion de tiempo del proceso
      */
     private fun createInforme(tiempo: String) {
         val informe = Informe(
@@ -166,11 +166,11 @@ object ResumenController {
     }
 
     /**
-     * CreateHtmlResumen Función que realiza el informe en formato HTML del filtrado general
+     * createHtmlResumen() Funcion que realiza el informe en formato HTML del filtrado general
      *
      * @param dirDestino Directorio de destino de los nuevos archivos
-     * @param tiempo Medición de tiempo del proceso
-     * @param fecha Fecha del momento de la realización del proceso
+     * @param tiempo Medicion de tiempo del proceso
+     * @param fecha Fecha del momento de la realizacion del proceso
      */
     private fun createHtmlResumen(dirDestino: String, tiempo: String, fecha: String) {
         val workingDir: String = System.getProperty("user.dir")
@@ -239,7 +239,7 @@ object ResumenController {
                         </table>
                         <h3>Media de toneladas mensuales de recogida de basura por distrito</h3>
                         <img src="$pathPlot2" width="700">
-                        <h3>Maximo, minimo , media y desviacion de toneladas anuales de recogidas por cada tipo de basura agrupadas por distrito</h3>
+                        <h3>Maximo, minimo , media y desviacion de toneladas anuales de recogidas agrupadas por distrito</h3>
                         <table border="1">
                         <tr><th>Distrito</th><th>Tipo</th><th>Maximo</th><th>Minimo</th><th>Media</th><th>Desviacion</th></tr>
                         $data4

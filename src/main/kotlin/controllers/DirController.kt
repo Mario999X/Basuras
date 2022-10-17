@@ -1,7 +1,7 @@
 package controllers
 
 /**
- * @author Mario Resa y Sebastián Mendoza
+ * @author Mario Resa y Sebastian Mendoza
  */
 import mu.KotlinLogging
 import java.io.File
@@ -12,14 +12,14 @@ import kotlin.system.exitProcess
 private val logger = KotlinLogging.logger {}
 
 /**
- * DirController clase objeto donde se maneja la función que comprueba los directorios facilitados
+ * DirController clase objeto donde se maneja la funcion que comprueba los directorios facilitados
  *
  * @constructor Crea un DirController
  */
 object DirController {
 
     /**
-     * Init() Función que inicia la comprobación de los directorios de origen y destino facilitados por argumentos
+     * init() Funcion que inicia la comprobacion de los directorios de origen y destino facilitados por argumentos
      *
      * @param dirOrigen Directorio de origen que se ha facilitado
      * @param dirDestino Directorio de destino que se ha facilitado
@@ -45,7 +45,7 @@ object DirController {
         ) {
             logger.debug { "Carpeta de origen comprobada... OK" }
         } else {
-            logger.debug { "Proporciona una carpeta de origen válida... Fin de la aplicación" }
+            logger.debug { "Proporciona una carpeta de origen valida... Fin de la aplicacion" }
             exitProcess(0)
         }
         if (Files.isDirectory(dirDestinoPath) && Files.exists(dirDestinoPath)) {
