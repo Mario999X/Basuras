@@ -35,6 +35,7 @@ dependencies {
     // https://github.com/pdvrieze/xmlutil
     implementation("io.github.pdvrieze.xmlutil:core-jvm:0.84.3")
     implementation("io.github.pdvrieze.xmlutil:serialization-jvm:0.84.3")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 }
 
 tasks.test {

@@ -37,7 +37,7 @@ object DirController {
         } else {
             logger.debug { "Carpeta de bitacora no existe. Creando..." }
             Files.createDirectory(fileBitacoraPath)
-            logger.debug { "Carpeta de destino creada..." }
+            logger.debug { "Carpeta de bitacora creada..." }
         }
         if (Files.isDirectory(dirOrigenPath) && Files.exists(dirOrigenPath) && Files.exists(fileContOrigen) && Files.exists(
                 fileResiOrigen
