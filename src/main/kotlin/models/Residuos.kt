@@ -1,7 +1,7 @@
 package models
 
 /**
- * @author Mario Resa y Sebastián Mendoza
+ * @author Mario Resa y Sebastian Mendoza
  */
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -31,9 +31,9 @@ data class Residuos(
 )
 
 /**
- * LoadCsvResi Función que lee el CSV facilitado y lo guarda en una lista de tipo Residuos
+ * loadCsvResi() Funcion que lee el CSV facilitado y lo guarda en una lista de tipo Residuos
  *
- * @param csvFile Parámetro de tipo File donde se indicará el CSV que se va a leer
+ * @param csvFile Parametro de tipo File donde se indicara el CSV que se va a leer
  * @return Variable de tipo Lista de Residuos obtenida en la lectura del CSV
  */
 fun loadCsvResi(csvFile: File): List<Residuos> {
@@ -56,10 +56,10 @@ fun loadCsvResi(csvFile: File): List<Residuos> {
 }
 
 /**
- * Punto Función que cambia las comas en puntos para poder realizar los cálculos de las filtraciones
+ * punto() Funcion que cambia las comas en puntos para poder realizar los calculos de las filtraciones
  *
  * @param dato Variable de tipo String que se le aplica el cambio
- * @return Variable de tipo Double con el que se puede hacer cálculos
+ * @return Variable de tipo Double con el que se puede hacer calculos
  */
 fun punto(dato: String): Double {
     val nuevo: String = dato.replace(",", ".")
@@ -67,10 +67,10 @@ fun punto(dato: String): Double {
 }
 
 /**
- * IgualarString Función que "normaliza" el String de la lectura del CSV para poder trabajar en el listado
+ * igualarString() Funcion que "normaliza" el String de la lectura del CSV para poder trabajar en el listado
  *
- * @param dato Variable de tip String al que se le hará la normalización
- * @return Variable normalizada y transformada en mayúsculas para su uso en el filtrado
+ * @param dato Variable de tip String al que se le hara la normalizacion
+ * @return Variable normalizada y transformada en mayusculas para su uso en el filtrado
  */
 fun igualarString(dato: String): String {
     var nuevo: String = Normalizer.normalize(dato, Normalizer.Form.NFD).replace("[^\\p{ASCII}]".toRegex(), "")

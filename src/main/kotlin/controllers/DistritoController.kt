@@ -1,7 +1,7 @@
 package controllers
 
 /**
- * @author Mario Resa y Sebastián Mendoza
+ * @author Mario Resa y Sebastian Mendoza
  */
 import jetbrains.datalore.base.values.Color
 import jetbrains.letsPlot.*
@@ -25,7 +25,7 @@ import kotlin.system.measureTimeMillis
 private val logger = KotlinLogging.logger {}
 
 /**
- * DistritoController Clase objeto donde se controla la filtración de los CSV por distrito y la creación de del informe en formato HTML y en XML
+ * DistritoController Clase objeto donde se controla la filtracion de los CSV por distrito y la creacion de del informe en formato HTML y en XML
  *
  * @constructor Crea un DistritoController
  */
@@ -36,12 +36,11 @@ object DistritoController {
     private lateinit var numTipoContXDistrito: DataRow<Contenedores>
     private lateinit var totalTonResiDistrito: DataFrame<Residuos>
     private lateinit var operacionesToneladas: DataFrame<Residuos>
-    private lateinit var operacionGrafica: DataFrame<Residuos>
 
     /**
-     * Init() Función que inicia el filtrado y el informe por distrito
+     * init() Funcion que inicia el filtrado y el informe por distrito
      *
-     * @param distritoMain Parámetro donde se especifica el distrito que se desea filtrar
+     * @param distritoMain Parametro donde se especifica el distrito que se desea filtrar
      * @param dirOrigen Directorio de origen que se ha facilitado
      * @param dirDestino Directorio de destino que se ha facilitado
      */
@@ -72,10 +71,10 @@ object DistritoController {
     }
 
     /**
-     * ProcesoFiltrados Función que realiza los filtrados del CSV por distrito,
-     * además de la creación de las gráficas y el informe en XML
+     * procesoFiltrados() Funcion que realiza los filtrados del CSV por distrito, ademas
+     * de la creacion de las graficas y el informe en XML
      *
-     * @param distrito Parámetro don de se especifica el distrito a filtrar
+     * @param distrito Parametro don de se especifica el distrito a filtrar
      * @param cont Lista de contenedores obtenida con la lectura del primer CSV ("contenedores_varios.csv")
      * @param resi Lista de residuos obtenida con la lectura del segundo CSV ("modelo residuos_2021.csv")
      */
@@ -93,7 +92,7 @@ object DistritoController {
             exitProcess(0)
         }
 
-        logger.debug { "Número de contenedores de cada tipo, distrito específico" }
+        logger.debug { "Numero de contenedores de cada tipo, distrito especifico" }
         numTipoContXDistrito =
             dfCont.filter { it.distritoCont == distrito }
                 .aggregate {
@@ -111,7 +110,7 @@ object DistritoController {
                     sum { it.toneladasResi } into "Total"
                 }.sortBy { it["Total"].desc() }
 
-        logger.debug { "Máximo, mínimo, media y desviación" }
+        logger.debug { "Maximo, minimo, media y desviacion" }
         operacionesToneladas = dfResi.filter { it.nomDistritoResi == distrito }
             .groupBy { it.tipoResi.rename("Tipo") }
             .aggregate {
@@ -121,7 +120,7 @@ object DistritoController {
                 std(it.toneladasResi) into "Desviacion"
             }
 
-        // GRÁFICAS
+        // GRAFICAS
         //Barras (Total Toneladas X Residuo) en determinado Distrito
         var fig: Plot = letsPlot(data = totalTonResiDistrito.toMap()) + geomBar(
             stat = Stat.identity, alpha = 0.8
@@ -132,8 +131,8 @@ object DistritoController {
         )
         ggsave(fig, "ToneladasPorResiduo${distrito}.png")
 
-        // Gráfico (Máximo, mínimo y media por meses en dicho distrito)
-        operacionGrafica = dfResi.filter { it.nomDistritoResi == distrito }
+        // Grafico (Maximo, minimo y media por meses en dicho distrito)
+       val operacionGrafica = dfResi.filter { it.nomDistritoResi == distrito }
             .groupBy { it.mesResi into "Meses" }
             .aggregate {
                 max(it.toneladasResi) into "Max"
@@ -162,14 +161,15 @@ object DistritoController {
         } + labs(
             x = "Meses",
             y = "Operaciones",
-            title = "Máximo, media y minimo para $distrito por meses"
+            title = "Maximo, media y minimo para $distrito por meses"
         )
         ggsave(fig, "Operaciones${distrito}.png")
 
     }
 
     /**
-     * CreateInforme Función que realiza la creación de un informe en formato XML con el resultado exitoso o no de la función DistritoController.kt
+     * createInforme() Funcion que realiza la creacion de un informe en formato XML con el resultado exitoso
+     * o no de la funcion DistritoController.kt
      *
      * @param distritoMain
      * @param tiempo
@@ -190,12 +190,12 @@ object DistritoController {
     }
 
     /**
-     * CreateHtmlDistrito Función que realiza el informe en formato HTML del filtrado por distrito
+     * createHtmlDistrito() Funcion que realiza el informe en formato HTML del filtrado por distrito
      *
-     * @param distrito Parámetro don de se especifica el distrito a filtrar
+     * @param distrito Parametro don de se especifica el distrito a filtrar
      * @param dirDestino Directorio de destino facilitado
-     * @param tiempo Medición de tiempo del proceso
-     * @param fecha Fecha del momento de la realización del proceso
+     * @param tiempo Medicion de tiempo del proceso
+     * @param fecha Fecha del momento de la realizacion del proceso
      */
     private fun createHtmlDistrito(distrito: String, dirDestino: String, tiempo: String, fecha: String) {
         val workingDir: String = System.getProperty("user.dir")
@@ -248,7 +248,7 @@ object DistritoController {
                                 <tr><th>Tipo</th><th>Max</th><th>Min</th><th>Media</th><th>Desviacion</th></tr>
                                 $data3
                                 </table>
-                                <h3>maximo, minimo y media por meses en dicho distrito</h3>
+                                <h3>Maximo, minimo y media por meses en dicho distrito</h3>
                                 <img src="$pathPlot2" width="700">
                                 <h3>Tiempo de generacion: $tiempo ms</h3>
                             </div>
