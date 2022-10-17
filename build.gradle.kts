@@ -6,6 +6,8 @@ plugins {
     id("org.jetbrains.kotlinx.dataframe") version "0.8.1"
     // Plugin para serializar
     kotlin("plugin.serialization") version "1.7.10"
+    //Dokka Documentación Kotlin
+    id("org.jetbrains.dokka") version "1.7.20"
     application
 }
 
@@ -36,6 +38,8 @@ dependencies {
     implementation("io.github.pdvrieze.xmlutil:core-jvm:0.84.3")
     implementation("io.github.pdvrieze.xmlutil:serialization-jvm:0.84.3")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    //Dokka Documentación Kotlin
+    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.20")
 }
 
 tasks.test {
