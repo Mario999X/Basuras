@@ -16,6 +16,7 @@ import java.io.File
 import java.io.IOException
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
 
 private val logger = KotlinLogging.logger {}
@@ -59,6 +60,7 @@ object ParserController {
             logger.error(e.message)
             proceso = false
             createInforme("0")
+            exitProcess(0)
         }
         return proceso
     }
