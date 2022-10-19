@@ -19,6 +19,8 @@ import java.text.Normalizer
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
 
@@ -114,7 +116,9 @@ object DistritoController {
         operacionesToneladas = dfResi.filter { it.nomDistritoResi == distrito }
             .groupBy { it.tipoResi.rename("Tipo") }
             .aggregate {
-                max(it.toneladasResi) into "Max"
+                maxBy{it.toneladasResi}["mesResi"] into "MesMax"
+                max{it.toneladasResi} into "Max"
+                minBy { it.toneladasResi }["mesResi"] into "MesMin"
                 min(it.toneladasResi) into "Min"
                 mean(it.toneladasResi) into "Media"
                 std(it.toneladasResi) into "Desviacion"
@@ -214,8 +218,9 @@ object DistritoController {
         }
         var data3 = ""
         for (i in operacionesToneladas) {
-            data3 += """<tr><td>${i["Tipo"]}</td><td>${i["Max"]}</td><td>${i["Min"]}</td><td>${i["Media"]}</td>
-                <td>${i["Desviacion"]}</td></tr>""".trimIndent()
+            data3 += """<tr><td>${i["Tipo"]}</td><td>${i["MesMax"]}</td><td>${i["Max"]}</td>
+            <td>${i["MesMin"]}</td><td>${i["Min"]}</td><td>${i["Media"]}</td>
+            <td>${i["Desviacion"]}</td></tr>""".trimIndent()
         }
 
         fileHtml.writeText(
@@ -245,7 +250,7 @@ object DistritoController {
                                 <img src="$pathPlot1" width="700">
                                 <h3>Maximo, minimo, media y desviacion por mes por residuo en este distrito</h3>
                                 <table border="1">
-                                <tr><th>Tipo</th><th>Max</th><th>Min</th><th>Media</th><th>Desviacion</th></tr>
+                                <tr><th>Tipo</th><th>MesMax</th><th>Max</th><th>MesMin</th><th>Min</th><th>Media</th><th>Desviacion</th></tr>
                                 $data3
                                 </table>
                                 <h3>Maximo, minimo y media por meses en dicho distrito</h3>
