@@ -40,5 +40,5 @@ fun Informe.Companion.writeToXmlFile(informe: Informe, xmlFile: File) {
     val xml = XML { indentString = " " }
     xmlFile.appendText(xml.encodeToString(informe))
     xmlFile.appendText("\n")
-    logger.debug { "Informe realizado con éxito" }
+    logger.debug { "Informe realizado con exito" }
 }

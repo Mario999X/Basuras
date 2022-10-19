@@ -14,6 +14,8 @@ import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import org.jetbrains.kotlinx.dataframe.io.writeJson
 import java.io.File
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.system.exitProcess
@@ -37,6 +39,17 @@ object ParserController {
      * @param dirDestino Directorio de destino que se ha facilitado
      */
     fun init(dirOrigen: String, dirDestino: String): Boolean {
+        val workingDir: String = System.getProperty("user.dir")
+        val fileBitacoraPath = Paths.get(workingDir + File.separator + "bitacora")
+
+        if (Files.isDirectory(fileBitacoraPath) && Files.exists(fileBitacoraPath)) {
+            logger.debug { "Carpeta de bitacora comprobada... OK" }
+        } else {
+            logger.debug { "Carpeta de bitacora no existe. Creando..." }
+            Files.createDirectory(fileBitacoraPath)
+            logger.debug { "Carpeta de bitacora creada..." }
+        }
+
         var proceso: Boolean
         try {
             logger.debug { "Creando archivos..." }
@@ -60,7 +73,6 @@ object ParserController {
             logger.error(e.message)
             proceso = false
             createInforme("0")
-            exitProcess(0)
         }
         return proceso
     }

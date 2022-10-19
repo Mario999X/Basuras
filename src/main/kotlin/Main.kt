@@ -12,10 +12,10 @@ private val logger = KotlinLogging.logger {}
  * @param args Array de tipo String donde se almacenan los argumentos introducidos
  */
 fun main(args: Array<String>) {
-    logger.debug { "Ejecutando aplicación" }
+    logger.debug { "Ejecutando aplicacion" }
     when (args.size) {
         0, 1, 2 ->
-            logger.debug { "Sin parámetros o datos erroneos: Vuelve a ejecutar el programa con una opción, una carpeta de origen de los datos y otra de destino" }
+            logger.debug { "Sin parametros o datos erroneos: Vuelve a ejecutar el programa con una opcion, una carpeta de origen de los datos y otra de destino" }
 
         3 -> {
             when (args[0].lowercase()) {
@@ -30,7 +30,7 @@ fun main(args: Array<String>) {
                 }
 
                 else -> {
-                    logger.debug { "Opción errónea: Vuelve a ejecutar el programa con una opción válida, una carpeta de origen de los datos y otra de destino" }
+                    logger.debug { "Opcion erronea: Vuelve a ejecutar el programa con una opción valida, una carpeta de origen de los datos y otra de destino" }
                 }
             }
         }
@@ -43,14 +43,14 @@ fun main(args: Array<String>) {
                 }
 
                 else -> {
-                    logger.debug { "Parámetros erróneos: Vuelve a ejecutar el programa con una opción válida, una carpeta de origen de los datos y otra de destino" }
+                    logger.debug { "Parametros erraneos: Vuelve a ejecutar el programa con una opcion valida, una carpeta de origen de los datos y otra de destino" }
                 }
             }
         }
 
         else -> {
-            logger.debug { "Parámetros erróneos: Vuelve a ejecutar el programa con una opción válida, una carpeta de origen de los datos y otra de destino" }
+            logger.debug { "Parametros erroneos: Vuelve a ejecutar el programa con una opcion valida, una carpeta de origen de los datos y otra de destino" }
         }
     }
-    logger.debug { "Fin de la aplicación" }
+    logger.debug { "Fin de la aplicacion" }
 }
