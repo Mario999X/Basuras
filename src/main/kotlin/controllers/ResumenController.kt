@@ -111,7 +111,7 @@ object ResumenController {
                     std { it.toneladasResi } into "Desviacion"
                 }.sortBy { it["Distrito"] }
 
-        logger.debug { "Suma de las toneladas recogidas en un año por distrito" }
+        logger.debug { "Suma de las toneladas recogidas anual por distrito" }
         sumToneladasDistrito =
             dfResi.groupBy { it.nomDistritoResi.rename("Distrito") }
                 .aggregate { sum { it.toneladasResi } into "TotalToneladas" }.sortBy { it["Distrito"] }
