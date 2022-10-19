@@ -15,6 +15,7 @@ Nuestro proyecto se divide en 3 secciones: los controladores, los modelos y el M
     * **Residuos**, para el CSV de modelo_residuos_2021
     * **Informe**, creado para bitacora.xml
 * En **Main.kt**, hemos creado una función que acepta parámetros de entrada, guardando esos datos en un array de String y, según la posición de sus datos, realice las diferentes operaciones.
+* PDF con la documentación completa en la carpeta **data**
 ## Herramientas usadas
 * [Gradle](https://gradle.org/)
 * [Dataframe](https://kotlin.github.io/dataframe/overview.html)
@@ -27,4 +28,4 @@ Nuestro proyecto se divide en 3 secciones: los controladores, los modelos y el M
 * [Logger](https://www.baeldung.com/kotlin/kotlin-logging-library)
 * [Jar](https://www.baeldung.com/kotlin/gradle-executable-jar#fat-jar-for-the-lightweight-application)
 ## Video
-*.
+* [Enlace al video explicativo](https://drive.google.com/file/d/1Pf1JYPBXwP78Ic8pn-CtlTcCOwAmYUw1/view?usp=sharing)
